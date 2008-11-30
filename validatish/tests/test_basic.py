@@ -33,9 +33,12 @@ def check_fail(type, self, fn, values):
             e = sys.exc_info()[1]
             self.fail(error_message(type,self,v,e))
 
+
 class TestString(unittest.TestCase):
 
     type='String'
+    fn = staticmethod(validate.string)
+    class_fn = validate.String().validate
 
     def test_validate_pass(self):
         self.section='pass'
@@ -46,10 +49,8 @@ class TestString(unittest.TestCase):
             'sad',
             None,
             ]
-        fn = validate.string
-        check_pass('function',self, fn, values)
-        fn = validate.String().validate
-        check_pass('class', self, fn, values)
+        check_pass('function',self, self.fn, values)
+        check_pass('class', self, self.class_fn, values)
 
     def test_validate_fail(self):
         self.section='pass'
@@ -59,15 +60,15 @@ class TestString(unittest.TestCase):
             ['a','b','c'],
             ['a'],
             ]
-        fn = validate.string
-        check_fail('function', self, fn, values)
-        validator = validate.String().validate
-        check_fail('class', self, fn, values)
+        check_fail('function', self, self.fn, values)
+        check_fail('class', self, self.class_fn, values)
 
 
 class TestInteger(unittest.TestCase):
 
     type='Integer'
+    fn = staticmethod(validate.integer)
+    class_fn = validate.Integer().validate
 
     def test_validate_pass(self):
         self.section='pass'
@@ -78,10 +79,8 @@ class TestInteger(unittest.TestCase):
             1.0,
             1L,
             ]
-        fn = validate.integer
-        check_pass('function',self, fn, values)
-        fn = validate.Integer().validate
-        check_pass('class', self, fn, values)
+        check_pass('function',self, self.fn, values)
+        check_pass('class', self, self.class_fn, values)
 
     def test_validate_fail(self):
         self.section='pass'
@@ -91,15 +90,15 @@ class TestInteger(unittest.TestCase):
             ['a','b','c'],
             '1',
             ]
-        fn = validate.integer
-        check_fail('function', self, fn, values)
-        validator = validate.Integer().validate
-        check_fail('class', self, fn, values)
+        check_fail('function', self, self.fn, values)
+        check_fail('class', self, self.class_fn, values)
 
 
 class TestRequired(unittest.TestCase):
 
     type='Required'
+    fn = staticmethod(validate.required)
+    class_fn = validate.Required().validate
 
     def test_validate_pass(self):
         self.section='pass'
@@ -111,10 +110,8 @@ class TestRequired(unittest.TestCase):
             [None],
             'None',
             ]
-        fn = validate.required
-        check_pass('function',self, fn, values)
-        fn = validate.Required().validate
-        check_pass('class', self, fn, values)
+        check_pass('function',self, self.fn, values)
+        check_pass('class', self, self.class_fn, values)
 
     def test_validate_fail(self):
         self.section='fail'
@@ -123,38 +120,43 @@ class TestRequired(unittest.TestCase):
             [],
             u'',
             ]
-        fn = validate.required
-        check_fail('function', self, fn, values)
-        fn = validate.Required().validate
-        check_fail('class', self, fn, values)
+        check_fail('function', self, self.fn, values)
+        check_fail('class', self, self.class_fn, values)
 
 
 class TestLength(unittest.TestCase):
 
-    def test_validate_pass(self):
-        values = [
-            'None',
-            ]
-        fn = validate.required
-        check_pass('function',self, fn, values)
-        fn = validate.Required().validate
-        check_pass('class', self, fn, values)
+    type = 'Length'
+    fn = staticmethod( lambda v: validate.length(v, min=3) )
+    class_fn = validate.Length(min=3).validate
 
-    def test_validate_fail(self):
+    def test_validate_min_pass(self):
+        self.section='pass'
         values = [
+            'abc',
+            ['a','b','c'],
+            ]
+        check_pass('function', self, self.fn, values)
+        check_pass('class', self, self.class_fn, values)
+
+    def test_validate_min_fail(self):
+        self.section='fail'
+        values = [
+            'a',
+            'ab',
             '',
             [],
-            u'',
+            ['a'],
+            ['ab'],
             ]
-        fn = validate.required
-        check_fail('function', self, fn, values)
-        fn = validate.Required().validate
-        check_fail('class', self, fn, values)
+        check_fail('function', self, self.fn, values)
+        check_fail('class', self, self.class_fn, values)
 
 
 class TestAll_StringRequired(unittest.TestCase):
 
     type='All'
+    fn = validate.All(validate.String(), validate.Required()).validate
 
     def test_validate_pass(self):
         self.section='pass'
@@ -163,8 +165,7 @@ class TestAll_StringRequired(unittest.TestCase):
             '4',
             u'3'
         ]
-        fn = validate.All(validate.String(), validate.Required()).validate
-        check_pass('class', self, fn, values)
+        check_pass('class', self, self.fn, values)
 
 
     def test_validate_fail(self):
@@ -174,8 +175,7 @@ class TestAll_StringRequired(unittest.TestCase):
             u'',
             0,
         ]
-        fn = validate.All(validate.String(), validate.Required()).validate
-        check_fail('class', self, fn, values)
+        check_fail('class', self, self.fn, values)
 
 
 class TestAny_IntegerString(unittest.TestCase):

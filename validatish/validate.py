@@ -104,7 +104,7 @@ class Required(Validator):
 ##
 # LENGTH
 
-def check_length(v, min=None, max=None):
+def length(v, min=None, max=None):
     if isinstance(v,basestring):
         error = "%s cannot have %s than %s characters"
     else:
@@ -121,7 +121,7 @@ class Length(Validator):
         self.min = min
 
     def validate(self, v):
-        check_length(v, min=self.min, max=self.max)
+        length(v, min=self.min, max=self.max)
 
 ##
 # ANY
