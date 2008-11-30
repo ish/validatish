@@ -1,0 +1,9 @@
+setup.cfg
+setup.py
+validatish/__init__.py
+validatish.egg-info/PKG-INFO
+validatish.egg-info/SOURCES.txt
+validatish.egg-info/dependency_links.txt
+validatish.egg-info/entry_points.txt
+validatish.egg-info/top_level.txt
+validatish.egg-info/zip-safe
