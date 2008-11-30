@@ -127,8 +127,12 @@ class TestRequired(unittest.TestCase):
 class TestLength(unittest.TestCase):
 
     type = 'Length'
-    fn = staticmethod( lambda v: validate.length(v, min=3) )
-    class_fn = validate.Length(min=3).validate
+
+    fn_min = staticmethod( lambda v: validate.length(v, min=3) )
+    class_fn_min = validate.Length(min=3).validate
+
+    fn_max = staticmethod( lambda v: validate.length(v, max=3) )
+    class_fn_max = validate.Length(max=3).validate
 
     def test_validate_min_pass(self):
         self.section='pass'
@@ -136,8 +140,8 @@ class TestLength(unittest.TestCase):
             'abc',
             ['a','b','c'],
             ]
-        check_pass('function', self, self.fn, values)
-        check_pass('class', self, self.class_fn, values)
+        check_pass('function', self, self.fn_min, values)
+        check_pass('class', self, self.class_fn_min, values)
 
     def test_validate_min_fail(self):
         self.section='fail'
@@ -149,9 +153,30 @@ class TestLength(unittest.TestCase):
             ['a'],
             ['ab'],
             ]
-        check_fail('function', self, self.fn, values)
-        check_fail('class', self, self.class_fn, values)
+        check_fail('function', self, self.fn_min, values)
+        check_fail('class', self, self.class_fn_min, values)
 
+    def test_validate_max_pass(self):
+        self.section='pass'
+        values = [
+            'abc',
+            ['a','b','c'],
+            '',
+            [],
+            ['abcd'],
+            ]
+        check_pass('function', self, self.fn_max, values)
+        check_pass('class', self, self.class_fn_max, values)
+
+    def test_validate_max_fail(self):
+        self.section='fail'
+        values = [
+            'abcde',
+            'abcd',
+            ['a','b','c','d'],
+            ]
+        check_fail('function', self, self.fn_max, values)
+        check_fail('class', self, self.class_fn_max, values)
 
 class TestAll_StringRequired(unittest.TestCase):
 
