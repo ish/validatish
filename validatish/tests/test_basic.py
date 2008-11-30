@@ -1,5 +1,6 @@
 import unittest
 from validatish import validate
+from datetime import datetime
 
 
 def error_message(type,self,v,e):
@@ -115,5 +116,59 @@ class TestRequired(unittest.TestCase):
             ]
         fn = validate.required
         check_fail('function', self, fn, values)
-        validator = validate.Required().validate
+        fn = validate.Required().validate
         check_fail('class', self, fn, values)
+
+
+
+class TestAll_StringRequired(unittest.TestCase):
+
+    type='All'
+
+    def test_validate_pass(self):
+        self.section='pass'
+        values = [
+            '1',
+            '4',
+            u'3'
+        ]
+        fn = validate.All(validate.String(), validate.Required()).validate
+        check_pass('class', self, fn, values)
+
+
+    def test_validate_fail(self):
+        self.section='fail'
+        values = [
+            '',
+            u'',
+            0,
+        ]
+        fn = validate.All(validate.String(), validate.Required()).validate
+        check_fail('class', self, fn, values)
+
+
+class TestAny_IntegerString(unittest.TestCase):
+
+    type='Any'
+    fn = validate.Any(validate.String(), validate.Integer()).validate
+
+    def test_validate_pass(self):
+        self.section='pass'
+        values = [
+            '1',
+            4,
+            1L,
+            None,
+            ]
+        check_pass('class', self, self.fn, values)
+
+    def test_validate_fail(self):
+        self.section='fail'
+        values = [
+            0.5,
+            datetime.now(),
+        ]
+        check_fail('class', self, self.fn, values)
+
+
+
