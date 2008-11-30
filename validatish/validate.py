@@ -1,22 +1,39 @@
+
+
+# Flatten function from http://mail.python.org/pipermail/python-list/2003-October/232886.html
+def flatten(s, toiter=iter):
+    try:
+        it = toiter(s)
+    except TypeError:
+        yield s
+    else:
+        for elem in it:
+            for subelem in flatten(elem, toiter):
+                yield subelem
+
+def keepstrings(seq):
+    if isinstance(seq, basestring):
+        raise TypeError
+    return iter(seq)
+
+
+
 class Invalid(Exception):
 
-    def __init__(self, msg, errors=None):
+    def __init__(self, msg, exceptions=None):
         self.msg = msg
-        self.errors = errors
+        self.exceptions = exceptions
 
-    def __str__(self):
-        return self.msg
+    @property
+    def errors(self):
+        return list(flatten(self._fetch_errors(),keepstrings))
 
-    def __repr__(self):
-        error_msg = '\n'.join(self.list_errors())
-        return '%s\n---------\n%s'%(self.msg, error_msg)
-
-    def list_errors(self):
-        if self.errors is None:
+    def _fetch_errors(self):
+        if self.exceptions is None:
             yield self.msg
         else:
-            for e in self.errors:
-                e.list_errors()
+            for e in self.exceptions:
+                yield e._fetch_errors()
 
 
 
@@ -37,6 +54,8 @@ class CompoundValidator(Validator):
 # STRING
 
 def string(v):
+    if v is None:
+        return
     if not isinstance(v,basestring):
         raise Invalid("%s is not a string"%v)
 
@@ -51,11 +70,14 @@ class String(Validator):
 # INTEGER
 
 def integer(v):
+    if v is None:
+        return
+    msg = "%s is not an integer"
     try:
         if v != int(v):
-            raise
+            raise Invalid(msg%v)
     except:
-        raise Invalid("%s is not an integer"%v)
+        raise Invalid(msg%v)
     
 class Integer(Validator):
     """ Checks whether value can be converted to an integer  """
@@ -67,8 +89,8 @@ class Integer(Validator):
 ##
 # REQUIRED
 
-def nonzero(v):
-    if not v:
+def required(v):
+    if not v and v != 0:
         raise Invalid("%s is required"%v)
 
 class Required(Validator):
@@ -76,7 +98,7 @@ class Required(Validator):
     """
 
     def validate(self, v):
-        nonezero(v)
+        required(v)
 
 
 ##
@@ -110,14 +132,14 @@ class Any(CompoundValidator):
         self.validators=args
 
     def validate(self, v):
-        errors = []
+        exceptions = []
         for validator in self.validators:
             try:
                 validator.validate(v)
             except Invalid, e:
-                errors.append(e)
-        if len(errors) == len(self.validators):
-            raise Invalid("%s is not valid"%v, errors)
+                exceptions.append(e)
+        if len(exceptions) == len(self.validators):
+            raise Invalid("%s is not valid"%v, exceptions)
 
 
 ##
@@ -129,14 +151,14 @@ class All(CompoundValidator):
         self.validators = args
 
     def validate(self, v):
-        errors = []
+        exceptions = []
         for validator in self.validators:
             try:
                 validator.validate(v)
             except Invalid, e:
-                errors.append(e)
-        if len(errors):
-            raise Invalid("%s is not valid"%v, errors)
+                exceptions.append(e)
+        if len(exceptions):
+            raise Invalid("%s is not valid"%v, exceptions)
 
 
 
