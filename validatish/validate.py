@@ -56,8 +56,9 @@ class CompoundValidator(Validator):
 def string(v):
     if v is None:
         return
+    msg = "must be a string"
     if not isinstance(v,basestring):
-        raise Invalid("%s is not a string"%v)
+        raise Invalid(msg)
 
 class String(Validator):
     """ Checks whether value can be converted to an integer  """
@@ -72,12 +73,12 @@ class String(Validator):
 def integer(v):
     if v is None:
         return
-    msg = "%s is not an integer"
+    msg = "must be an integer"
     try:
         if v != int(v):
-            raise Invalid(msg%v)
+            raise Invalid(msg)
     except:
-        raise Invalid(msg%v)
+        raise Invalid(msg)
     
 class Integer(Validator):
     """ Checks whether value can be converted to an integer  """
@@ -87,11 +88,32 @@ class Integer(Validator):
 
 
 ##
+# Number
+
+def number(v):
+    if v is None:
+        return
+    msg = "must be a number"
+    try:
+        if isinstance(v,basestring):
+            raise Invalid(msg%v)
+        float(v)
+    except:
+        raise Invalid(msg)
+
+class Number(Validator):
+    """ Checks whether value can be converted to a number and is not a string  """
+
+    def validate(self, v):
+        number(v)
+
+
+##
 # REQUIRED
 
 def required(v):
     if not v and v != 0:
-        raise Invalid("%s is required"%v)
+        raise Invalid("is required")
 
 class Required(Validator):
     """ Checks that the value is not empty
@@ -105,14 +127,16 @@ class Required(Validator):
 # LENGTH
 
 def length(v, min=None, max=None):
+    if min is None and max is None:
+        return
     if isinstance(v,basestring):
-        error = "%s cannot have %s than %s characters"
+        error = "must have %s than %s characters"
     else:
-        error = "%s cannot have %s than %s items"
+        error = "must have %s than %s items"
     if max is not None and len(v) > max:
-        raise Invalid(error%(v,"more",max))
+        raise Invalid(error%("less",max))
     if min is not None and len(v) < min:
-        raise Invalid(error%(v,"less",min))
+        raise Invalid(error%("more",min))
 
 class Length(Validator):
 
@@ -122,6 +146,34 @@ class Length(Validator):
 
     def validate(self, v):
         length(v, min=self.min, max=self.max)
+
+##
+# RANGE
+
+def range(v, min=None, max=None):
+    if min is None and max is None:
+        return
+    if min is not None and max is not None:
+        error = "must be between %s and %s"%(min,max)
+    elif min is not None:
+        error = "must be greater than %s"%(min)
+    else:
+        error = "must be less than %s"%(min)
+        
+    if max is not None and v > max:
+        raise Invalid(error)
+    if min is not None and v < min:
+        raise Invalid(error)
+
+class Range(Validator):
+
+    def __init__(self, min=None, max=None):
+        self.max = max
+        self.min = min
+
+    def validate(self, v):
+        range(v, min=self.min, max=self.max)
+
 
 ##
 # ANY
