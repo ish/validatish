@@ -1,15 +1,16 @@
-import unittest
+import unittest, sys
 from validatish import validate
 from datetime import datetime
 
 
 def error_message(type,self,v,e):
+    msg = getattr(e,'msg',repr(e))
     if type == 'function':
-        return "'%s' secton of function '%s' on '%s' failed with %s"%(
-            self.section, self.type, v, e.msg)
+        return "'%s' secton of function %s(%s) failed with %s"%(
+            self.section, self.type, v, msg)
     if type == 'class':
-        return "'%s' secton of object '%s' on '%s' failed with %s"%(
-            self.section, self.type.lower(), v, e.msg)
+        return "'%s' secton of object %s(%s)' failed with %s"%(
+            self.section, self.type.lower(), v, msg)
 
 def check_pass(type, self, fn, values):
     for v in values:
@@ -23,9 +24,13 @@ def check_fail(type, self, fn, values):
     for v in values:
         try:
             fn(v)
-        except validate.Invalid, e:
+            self.fail(error_message(type,self,v,'incorrectly passed validation'))
+        except validate.Invalid:
             continue
-        except Exception, e:
+        except AssertionError:
+            raise
+        except:
+            e = sys.exc_info()[1]
             self.fail(error_message(type,self,v,e))
 
 class TestString(unittest.TestCase):
@@ -94,13 +99,40 @@ class TestInteger(unittest.TestCase):
 
 class TestRequired(unittest.TestCase):
 
+    type='Required'
+
     def test_validate_pass(self):
+        self.section='pass'
         values = [
             0.0,
             ' ',
             [''],
             '0',
             [None],
+            'None',
+            ]
+        fn = validate.required
+        check_pass('function',self, fn, values)
+        fn = validate.Required().validate
+        check_pass('class', self, fn, values)
+
+    def test_validate_fail(self):
+        self.section='fail'
+        values = [
+            '',
+            [],
+            u'',
+            ]
+        fn = validate.required
+        check_fail('function', self, fn, values)
+        fn = validate.Required().validate
+        check_fail('class', self, fn, values)
+
+
+class TestLength(unittest.TestCase):
+
+    def test_validate_pass(self):
+        values = [
             'None',
             ]
         fn = validate.required
@@ -118,7 +150,6 @@ class TestRequired(unittest.TestCase):
         check_fail('function', self, fn, values)
         fn = validate.Required().validate
         check_fail('class', self, fn, values)
-
 
 
 class TestAll_StringRequired(unittest.TestCase):
@@ -156,7 +187,7 @@ class TestAny_IntegerString(unittest.TestCase):
         self.section='pass'
         values = [
             '1',
-            4,
+            1,
             1L,
             None,
             ]
