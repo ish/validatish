@@ -110,6 +110,7 @@ class TestNumber(unittest.TestCase):
             1.01,
             1E6,
             -3.1415926,
+            None,
             ]
         check_pass('function',self, self.fn, values)
         check_pass('class', self, self.class_fn, values)
@@ -218,6 +219,13 @@ class TestLength(unittest.TestCase):
         except validate.Invalid, e:
             assert 'less' in e.msg
 
+    def test_noattrs(self):
+        try:
+            validate.length(1)
+        except:
+            self.fail('unexpected error using no attrs for validate.length')
+            
+
 class TestRange(unittest.TestCase):
 
     type = 'Range'
@@ -310,6 +318,13 @@ class TestRange(unittest.TestCase):
         except validate.Invalid, e:
             assert 'between' in e.msg
         
+    def test_noattrs(self):
+        try:
+            validate.range(1)
+            return
+        except:
+            pass
+        self.fail('unexpected error using no attrs for validate.range')
 
 class TestAll_StringRequired(unittest.TestCase):
 
@@ -335,6 +350,18 @@ class TestAll_StringRequired(unittest.TestCase):
         ]
         check_fail('class', self, self.fn, values)
 
+    def test_messages(self):
+        try:
+            self.fn(None)
+        except validate.Invalid, e:
+            self.assertEquals(len(e.errors),1)
+            self.assertEquals('is required',e.errors[0])
+        try:
+            self.fn(1)
+        except validate.Invalid, e:
+            self.assertEquals(len(e.errors),1)
+            self.assertEquals('must be a string',e.errors[0])
+
 
 class TestAny_IntegerString(unittest.TestCase):
 
@@ -358,6 +385,149 @@ class TestAny_IntegerString(unittest.TestCase):
             datetime.now(),
         ]
         check_fail('class', self, self.fn, values)
+
+    def test_messages(self):
+        try:
+            self.fn(datetime.now())
+        except validate.Invalid, e:
+            self.assertEquals(len(e.errors),2)
+            assert 'string' in ''.join(e.errors)
+            assert 'integer' in ''.join(e.errors)
+
+
+
+class Test_RequiredAndIntegerOrString(unittest.TestCase):
+
+    type='RequiredAndIntegerOrString'
+    fn = validate.All(
+            validate.Required(),
+            validate.Any(
+                validate.String(), 
+                validate.Integer()
+            )
+        ).validate
+
+    def test_validate_pass(self):
+        self.section='pass'
+        values = [
+            '1',
+            1,
+            1L,
+            ]
+        check_pass('class', self, self.fn, values)
+
+    def test_validate_fail(self):
+        self.section='fail'
+        values = [
+            0.5,
+            datetime.now(),
+            None,
+        ]
+        check_fail('class', self, self.fn, values)
+
+    def test_messages(self):
+        try:
+            self.fn(datetime.now())
+        except validate.Invalid, e:
+            self.assertEquals(len(e.errors),2)
+            assert 'string' in ''.join(e.errors)
+            assert 'integer' in ''.join(e.errors)
+
+class TestPlainText(unittest.TestCase):
+
+    type='PlainText'
+    fn = staticmethod(validate.plaintext)
+    class_fn = validate.PlainText().validate
+
+    fn_extra_underline = staticmethod( lambda v: validate.plaintext(v,extra='_') )
+    class_fn_extra_underline = validate.PlainText(extra='_').validate
+
+    fn_extra_hyphen = staticmethod( lambda v: validate.plaintext(v,extra='-') )
+    class_fn_extra_hyphen = validate.PlainText(extra='-').validate
+
+    def test_validate_pass(self):
+        self.section='pass'
+        values = [
+            'foo',
+            'a99',
+            '99a',
+            '99',
+            '',
+            None,
+            ]
+        check_pass('function',self, self.fn, values)
+        check_pass('class', self, self.class_fn, values)
+
+    def test_validate_fail(self):
+        self.section='pass'
+        values = [
+            1,
+            1.01,
+            ['a','b','c'],
+            ['a'],
+            'rew_',
+            'a-',
+            'a f',
+            ]
+        check_fail('function', self, self.fn, values)
+        check_fail('class', self, self.class_fn, values)
+
+    def test_validate_underline_pass(self):
+        self.section='pass'
+        values = [
+            'foo',
+            'a99',
+            '99a',
+            'rew_',
+            '99',
+            '',
+            '_',
+            None,
+            ]
+        check_pass('function',self, self.fn_extra_underline, values)
+        check_pass('class', self, self.class_fn_extra_underline, values)
+
+    def test_validate_underline_fail(self):
+        self.section='fail'
+        values = [
+            1,
+            1.01,
+            ['a','b','c'],
+            ['a'],
+            'a-',
+            'a f',
+            ]
+        check_fail('function', self, self.fn_extra_underline, values)
+        check_fail('class', self, self.class_fn_extra_underline, values)
+
+    def test_validate_hyphen_pass(self):
+        self.section='pass'
+        values = [
+            'foo',
+            'a99',
+            '99a',
+            '99',
+            '',
+            None,
+            'a-',
+            '-',
+            ]
+        check_pass('function',self, self.fn_extra_hyphen, values)
+        check_pass('class', self, self.class_fn_extra_hyphen, values)
+
+    def test_validate_hyphen_fail(self):
+        self.section='fail'
+        values = [
+            1,
+            1.01,
+            ['a','b','c'],
+            ['a'],
+            'a f',
+            'rew_',
+            '_',
+            ]
+        check_fail('function', self, self.fn_extra_hyphen, values)
+        check_fail('class', self, self.class_fn_extra_hyphen, values)
 
 
 

@@ -1,4 +1,4 @@
-
+import re
 
 # Flatten function from http://mail.python.org/pipermail/python-list/2003-October/232886.html
 def flatten(s, toiter=iter):
@@ -44,7 +44,6 @@ class Validator(object):
 
     def validate(self, value):
         """ A method that will raise an Invalid error """
-        pass
 
 class CompoundValidator(Validator):
     """ Abstract Base class for compound validators """
@@ -66,6 +65,38 @@ class String(Validator):
     def validate(self, v):
         string(v)
 
+
+##
+# PLAIN TEXT
+
+def plaintext(v,extra=''):
+    if v is None:
+        return
+    if not extra:
+        extra.replace('-','\-')
+    regex = r"^[a-zA-Z0-9%s]*$"%extra
+
+    msg = "must be a string"
+    if not isinstance(v,basestring):
+        raise Invalid(msg)
+
+    msg = "must consist of characters and numbers only"
+    if extra is not None:
+        msg = "must consist of characters and numbers plus any of %s"%extra
+
+    p = re.compile(regex)
+    if not p.match(v):
+        raise Invalid(msg)
+
+
+
+class PlainText(Validator):
+    """ Checks whether value is a 'simple' string"""
+    def __init__(self, extra=''):
+        self.extra = extra
+
+    def validate(self, v):
+        plaintext(v,extra=self.extra)
 
 ##
 # INTEGER
