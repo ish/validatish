@@ -7,10 +7,10 @@ def error_message(type,self,v,e):
     msg = getattr(e,'msg',repr(e))
     if type == 'function':
         return "'%s' secton of function %s(%s) failed with %s"%(
-            self.section, self.type, v, msg)
+            self.section, self.type, repr(v), msg)
     if type == 'class':
         return "'%s' secton of object %s(%s)' failed with %s"%(
-            self.section, self.type.lower(), v, msg)
+            self.section, self.type.lower(), repr(v), msg)
 
 def check_pass(type, self, fn, values):
     for v in values:
@@ -29,10 +29,6 @@ def check_fail(type, self, fn, values):
             continue
         except AssertionError:
             raise
-        except:
-            e = sys.exc_info()[1]
-            self.fail(error_message(type,self,v,e))
-
 
 class TestString(unittest.TestCase):
 
@@ -693,7 +689,7 @@ class TestURL(unittest.TestCase):
         check_pass('class', self, self.class_fn, values)
 
     def test_validate_fail(self):
-        self.section='pass'
+        self.section='fail'
         values = [
             1,
             1.01,
@@ -705,3 +701,21 @@ class TestURL(unittest.TestCase):
             ]
         check_fail('function', self, self.fn, values)
         check_fail('class', self, self.class_fn, values)
+
+    def test_validate_pass_withoutscheme(self):
+        fn = lambda v: validate.url(v, with_scheme=True)
+        self.section='pass'
+        values = [
+            'http://foo.com',
+            ]
+        check_pass('function', self, fn, values)
+
+
+    def test_validate_withoutscheme(self):
+        fn = lambda v: validate.url(v, with_scheme=True)
+        self.section='fail'
+        values = [
+            'foo.com',
+            ]
+        check_fail('function', self, fn, values)
+

@@ -38,13 +38,12 @@ class Invalid(Exception):
 
 
 
-
-
 class Validator(object):
     """ Abstract Base class for all validators """
 
     def validate(self, value):
         """ A method that will raise an Invalid error """
+
 
 class CompoundValidator(Validator):
     """ Abstract Base class for compound validators """
@@ -107,7 +106,7 @@ def integer(v):
     try:
         if v != int(v):
             raise Invalid(msg)
-    except:
+    except (ValueError, TypeError):
         raise Invalid(msg)
     
 class Integer(Validator):
@@ -126,9 +125,9 @@ def number(v):
     msg = "must be a number"
     try:
         if isinstance(v,basestring):
-            raise Invalid(msg%v)
+            raise Invalid(msg)
         float(v)
-    except:
+    except (ValueError, TypeError):
         raise Invalid(msg)
 
 class Number(Validator):
@@ -170,30 +169,26 @@ def url(v,with_scheme=False):
     if v is None:
         return
     msg = "must be a url"
-    try:
-        if not isinstance(v,basestring):
-            raise Invalid(msg%v)
+    if not isinstance(v,basestring):
+        raise Invalid(msg)
 
-        urlRE = re.compile(r'^(http|https)://'
-               r'(?:[a-z0-9\-]+|[a-z0-9][a-z0-9\-\.\_]*\.[a-z]+)'
-               r'(?::[0-9]+)?'
-               r'(?:/.*)?$', re.I) 
-        schemeRE = re.compile(r'^[a-zA-Z]+:')
-        # Check the scheme matches
-        if not with_scheme:
-            if not schemeRE.search(v):
-                # If we don't have a sceme, add one
-                v = 'http://' + v
-        # Now get the scheme part back out
-        match = schemeRE.search(v)
-        # and use it to help extract the domain part
-        v = match.group(0).lower() + v[len(match.group(0)):]
-        if not urlRE.search(v):
-            raise Invalid(msg)
-    except Invalid:
-        raise
-    except:
-        print sys.exc_info()
+    urlRE = re.compile(r'^(http|https)://'
+           r'(?:[a-z0-9\-]+|[a-z0-9][a-z0-9\-\.\_]*\.[a-z]+)'
+           r'(?::[0-9]+)?'
+           r'(?:/.*)?$', re.I) 
+    schemeRE = re.compile(r'^[a-zA-Z]+:')
+    # Check the scheme matches
+    if not with_scheme:
+        if not schemeRE.search(v):
+            # If we don't have a sceme, add one
+            v = 'http://' + v
+    # Now get the scheme part back out
+    match = schemeRE.search(v)
+    if match is None:
+        raise Invalid(msg)
+    # and use it to help extract the domain part
+    v = match.group(0).lower() + v[len(match.group(0)):]
+    if not urlRE.search(v):
         raise Invalid(msg)
                              
 
@@ -311,10 +306,11 @@ class Any(CompoundValidator):
         for validator in self.validators:
             try:
                 validator.validate(v)
-            except Invalid, e:
+            except Invalid, e :
                 exceptions.append(e)
-        if len(exceptions) == len(self.validators):
-            raise Invalid("%s is not valid"%v, exceptions)
+            else:
+                return
+        raise Invalid("%s is not valid"%v, exceptions)
 
 
 ##
@@ -332,6 +328,7 @@ class All(CompoundValidator):
                 validator.validate(v)
             except Invalid, e:
                 exceptions.append(e)
+
         if len(exceptions):
             raise Invalid("%s is not valid"%v, exceptions)
 
