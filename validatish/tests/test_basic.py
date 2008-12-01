@@ -154,6 +154,120 @@ class TestRequired(unittest.TestCase):
         check_fail('function', self, self.fn, values)
         check_fail('class', self, self.class_fn, values)
 
+class TestOneOf(unittest.TestCase):
+
+    type='OneOf'
+    fn = staticmethod( lambda v: staticmethod(validate.oneof(v,[3,5,7,9])))
+    class_fn = validate.OneOf([3,5,7,9]).validate
+
+    fn_chars = staticmethod( lambda v: staticmethod(validate.oneof(v,'ynsbl')))
+    class_fn_chars = validate.OneOf('ynsbl').validate
+
+    fn_list_tuples = staticmethod( lambda v: staticmethod(validate.oneof(v,[(1,2),(3,4),(5,6)])))
+    class_fn_list_tuples = validate.OneOf([(1,2),(3,4),(5,6)]).validate
+
+    def test_validate_pass(self):
+        self.section='pass'
+        values = [
+            3,
+            5,
+            7,
+            9,
+            None,
+            ]
+        check_pass('function',self, self.fn, values)
+        check_pass('class', self, self.class_fn, values)
+
+    def test_validate_fail(self):
+        self.section='pass'
+        values = [
+            'foo',
+            ['a','b','c'],
+            '1',
+            2,
+            4,
+            6,
+            8,
+            10,
+            '',
+            [],
+            ]
+        check_fail('function', self, self.fn, values)
+        check_fail('class', self, self.class_fn, values)
+
+    def test_validate_pass(self):
+        self.section='pass'
+        values = [
+            'y',
+            'b',
+            'l',
+            'n',
+            ]
+        check_pass('function',self, self.fn_chars, values)
+        check_pass('class', self, self.class_fn_chars, values)
+
+    def test_validate_fail(self):
+        self.section='pass'
+        values = [
+            'foo',
+            ['a','b','c'],
+            '1',
+            2,
+            4,
+            6,
+            8,
+            10,
+            '',
+            [],
+            'x',
+            'yy',
+            'yn',
+            ]
+        check_fail('function', self, self.fn_chars, values)
+        check_fail('class', self, self.class_fn_chars, values)
+
+    def test_validate_pass(self):
+        self.section='pass'
+        values = [
+            (1,2),
+            (3,4),
+            (5,6),
+            None,
+            ]
+        check_pass('function',self, self.fn_list_tuples, values)
+        check_pass('class', self, self.class_fn_list_tuples, values)
+
+    def test_validate_fail(self):
+        self.section='pass'
+        values = [
+            'foo',
+            ['a','b','c'],
+            '1',
+            2,
+            4,
+            6,
+            8,
+            10,
+            '',
+            [],
+            'x',
+            'yy',
+            'yn',
+            ]
+        check_fail('function', self, self.fn_list_tuples, values)
+        check_fail('class', self, self.class_fn_list_tuples, values)
+
+    def test_validate_emptyset(self):
+        self.section='fail'
+        class_fn = validate.OneOf([]).validate
+        values = [
+            (1,2),
+            (3,4),
+            (5,6),
+            ]
+        check_fail('class',self,class_fn, values)
+
+
 
 class TestLength(unittest.TestCase):
 

@@ -1,4 +1,5 @@
 import re
+from sets import Set
 
 # Flatten function from http://mail.python.org/pipermail/python-list/2003-October/232886.html
 def flatten(s, toiter=iter):
@@ -88,15 +89,36 @@ def plaintext(v,extra=''):
     if not p.match(v):
         raise Invalid(msg)
 
-
-
 class PlainText(Validator):
     """ Checks whether value is a 'simple' string"""
     def __init__(self, extra=''):
         self.extra = extra
-
     def validate(self, v):
         plaintext(v,extra=self.extra)
+
+
+##
+# ONE OF
+
+def oneof(v,set_of_values):
+    if v is None:
+        return
+    if not set_of_values:
+        raise Invalid("must be one of []")
+    if isinstance(v,list):
+        v = tuple(v)
+
+    if v not in Set(set_of_values):
+        raise Invalid("must be one of %s"%set_of_values)
+    
+
+class OneOf(Validator):
+    """ Checks whether value is one of a supplied list of values"""
+    def __init__(self, set_of_values):
+        self.set_of_values = set_of_values
+
+    def validate(self, v):
+        oneof(v, self.set_of_values)
 
 ##
 # INTEGER
