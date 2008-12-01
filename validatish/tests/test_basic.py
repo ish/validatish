@@ -645,3 +645,63 @@ class TestPlainText(unittest.TestCase):
 
 
 
+class TestEmail(unittest.TestCase):
+
+    type='Email'
+    fn = staticmethod(validate.email)
+    class_fn = validate.Email().validate
+
+    def test_validate_pass(self):
+        self.section='pass'
+        values = [
+            'r@t.p',
+            'info@timparkin.co.uk',
+            #'root@192.168.1.1', # Failing at the moment - get a better regexp
+            None,
+            ]
+        check_pass('function',self, self.fn, values)
+        check_pass('class', self, self.class_fn, values)
+
+    def test_validate_fail(self):
+        self.section='pass'
+        values = [
+            1,
+            1.01,
+            ['a','b','c'],
+            ['a'],
+            '@derek.com',
+            'tim@eliot',
+            'info@tim@parkin.co.uk',
+            ]
+        check_fail('function', self, self.fn, values)
+        check_fail('class', self, self.class_fn, values)
+
+class TestURL(unittest.TestCase):
+
+    type='URL'
+    fn = staticmethod(validate.url)
+    class_fn = validate.URL().validate
+
+    def test_validate_pass(self):
+        self.section='pass'
+        values = [
+            'foo.com',
+            #'192,168.1.1',#Fails at the moment
+            None,
+            ]
+        check_pass('function',self, self.fn, values)
+        check_pass('class', self, self.class_fn, values)
+
+    def test_validate_fail(self):
+        self.section='pass'
+        values = [
+            1,
+            1.01,
+            ['a','b','c'],
+            ['a'],
+            '@derek.com',
+            'tim@eliot',
+            'htt-p://google.com',
+            ]
+        check_fail('function', self, self.fn, values)
+        check_fail('class', self, self.class_fn, values)

@@ -1,4 +1,4 @@
-import re
+import re, sys
 from sets import Set
 
 # Flatten function from http://mail.python.org/pipermail/python-list/2003-October/232886.html
@@ -98,6 +98,116 @@ class PlainText(Validator):
 
 
 ##
+# INTEGER
+
+def integer(v):
+    if v is None:
+        return
+    msg = "must be an integer"
+    try:
+        if v != int(v):
+            raise Invalid(msg)
+    except:
+        raise Invalid(msg)
+    
+class Integer(Validator):
+    """ Checks whether value can be converted to an integer  """
+
+    def validate(self, v):
+        integer(v)
+
+
+##
+# NUMBER
+
+def number(v):
+    if v is None:
+        return
+    msg = "must be a number"
+    try:
+        if isinstance(v,basestring):
+            raise Invalid(msg%v)
+        float(v)
+    except:
+        raise Invalid(msg)
+
+class Number(Validator):
+    """ Checks whether value can be converted to a number and is not a string  """
+
+    def validate(self, v):
+        number(v)
+
+##
+# EMAIL
+
+def email(v):
+    if v is None:
+        return
+    msg = "must be an email"
+    if not isinstance(v,basestring):
+        raise Invalid(msg)
+    usernameRE = re.compile(r"^[^ \t\n\r@<>()]+$", re.I)
+    addressRE = re.compile(r"^[a-z0-9][a-z0-9\.\-_]*\.[a-z]+$", re.I)
+    parts = v.split('@')
+    if len(parts) !=2:
+        raise Invalid('must have only one @')
+    username, address = parts
+    if not usernameRE.search(username):
+        raise Invalid('username part before the @ is incorrect')
+    if not addressRE.search(address):
+        raise Invalid('address part after the @ is incorrect')
+
+class Email(Validator):
+    """ Checks whether value can be converted to a number and is not a string  """
+
+    def validate(self, v):
+        email(v)
+
+##
+# URL
+
+def url(v,with_scheme=False):
+    if v is None:
+        return
+    msg = "must be a url"
+    try:
+        if not isinstance(v,basestring):
+            raise Invalid(msg%v)
+
+        urlRE = re.compile(r'^(http|https)://'
+               r'(?:[a-z0-9\-]+|[a-z0-9][a-z0-9\-\.\_]*\.[a-z]+)'
+               r'(?::[0-9]+)?'
+               r'(?:/.*)?$', re.I) 
+        schemeRE = re.compile(r'^[a-zA-Z]+:')
+        # Check the scheme matches
+        if not with_scheme:
+            if not schemeRE.search(v):
+                # If we don't have a sceme, add one
+                v = 'http://' + v
+        # Now get the scheme part back out
+        match = schemeRE.search(v)
+        # and use it to help extract the domain part
+        v = match.group(0).lower() + v[len(match.group(0)):]
+        if not urlRE.search(v):
+            raise Invalid(msg)
+    except Invalid:
+        raise
+    except:
+        print sys.exc_info()
+        raise Invalid(msg)
+                             
+
+
+class URL(Validator):
+    """ Checks whether value is a url"""
+    def __init__(self, with_scheme=False):
+        self.with_scheme = with_scheme
+
+    def validate(self, v):
+        url(v, with_scheme=self.with_scheme)
+
+
+##
 # ONE OF
 
 def oneof(v,set_of_values):
@@ -119,46 +229,6 @@ class OneOf(Validator):
 
     def validate(self, v):
         oneof(v, self.set_of_values)
-
-##
-# INTEGER
-
-def integer(v):
-    if v is None:
-        return
-    msg = "must be an integer"
-    try:
-        if v != int(v):
-            raise Invalid(msg)
-    except:
-        raise Invalid(msg)
-    
-class Integer(Validator):
-    """ Checks whether value can be converted to an integer  """
-
-    def validate(self, v):
-        integer(v)
-
-
-##
-# Number
-
-def number(v):
-    if v is None:
-        return
-    msg = "must be a number"
-    try:
-        if isinstance(v,basestring):
-            raise Invalid(msg%v)
-        float(v)
-    except:
-        raise Invalid(msg)
-
-class Number(Validator):
-    """ Checks whether value can be converted to a number and is not a string  """
-
-    def validate(self, v):
-        number(v)
 
 
 ##
