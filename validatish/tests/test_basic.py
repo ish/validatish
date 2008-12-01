@@ -34,7 +34,7 @@ class TestString(unittest.TestCase):
 
     type='String'
     fn = staticmethod(validate.string)
-    class_fn = validate.String().validate
+    class_fn = validate.String()
 
     def test_validate_pass(self):
         self.section='pass'
@@ -64,7 +64,7 @@ class TestInteger(unittest.TestCase):
 
     type='Integer'
     fn = staticmethod(validate.integer)
-    class_fn = validate.Integer().validate
+    class_fn = validate.Integer()
 
     def test_validate_pass(self):
         self.section='pass'
@@ -89,11 +89,188 @@ class TestInteger(unittest.TestCase):
         check_fail('function', self, self.fn, values)
         check_fail('class', self, self.class_fn, values)
 
+class TestPlainText(unittest.TestCase):
+
+    type='PlainText'
+    fn = staticmethod(validate.plaintext)
+    class_fn = validate.PlainText()
+
+    fn_extra_underline = staticmethod( lambda v: validate.plaintext(v,extra='_') )
+    class_fn_extra_underline = validate.PlainText(extra='_')
+
+    fn_extra_hyphen = staticmethod( lambda v: validate.plaintext(v,extra='-') )
+    class_fn_extra_hyphen = validate.PlainText(extra='-')
+
+    def test_validate_pass(self):
+        self.section='pass'
+        values = [
+            'foo',
+            'a99',
+            '99a',
+            '99',
+            '',
+            None,
+            ]
+        check_pass('function',self, self.fn, values)
+        check_pass('class', self, self.class_fn, values)
+
+    def test_validate_fail(self):
+        self.section='pass'
+        values = [
+            1,
+            1.01,
+            ['a','b','c'],
+            ['a'],
+            'rew_',
+            'a-',
+            'a f',
+            ]
+        check_fail('function', self, self.fn, values)
+        check_fail('class', self, self.class_fn, values)
+
+    def test_validate_underline_pass(self):
+        self.section='pass'
+        values = [
+            'foo',
+            'a99',
+            '99a',
+            'rew_',
+            '99',
+            '',
+            '_',
+            None,
+            ]
+        check_pass('function',self, self.fn_extra_underline, values)
+        check_pass('class', self, self.class_fn_extra_underline, values)
+
+    def test_validate_underline_fail(self):
+        self.section='fail'
+        values = [
+            1,
+            1.01,
+            ['a','b','c'],
+            ['a'],
+            'a-',
+            'a f',
+            ]
+        check_fail('function', self, self.fn_extra_underline, values)
+        check_fail('class', self, self.class_fn_extra_underline, values)
+
+    def test_validate_hyphen_pass(self):
+        self.section='pass'
+        values = [
+            'foo',
+            'a99',
+            '99a',
+            '99',
+            '',
+            None,
+            'a-',
+            '-',
+            ]
+        check_pass('function',self, self.fn_extra_hyphen, values)
+        check_pass('class', self, self.class_fn_extra_hyphen, values)
+
+    def test_validate_hyphen_fail(self):
+        self.section='fail'
+        values = [
+            1,
+            1.01,
+            ['a','b','c'],
+            ['a'],
+            'a f',
+            'rew_',
+            '_',
+            ]
+        check_fail('function', self, self.fn_extra_hyphen, values)
+        check_fail('class', self, self.class_fn_extra_hyphen, values)
+
+
+
+class TestEmail(unittest.TestCase):
+
+    type='Email'
+    fn = staticmethod(validate.email)
+    class_fn = validate.Email()
+
+    def test_validate_pass(self):
+        self.section='pass'
+        values = [
+            'r@t.p',
+            'info@timparkin.co.uk',
+            #'root@192.168.1.1', # Failing at the moment - get a better regexp
+            None,
+            ]
+        check_pass('function',self, self.fn, values)
+        check_pass('class', self, self.class_fn, values)
+
+    def test_validate_fail(self):
+        self.section='pass'
+        values = [
+            1,
+            1.01,
+            ['a','b','c'],
+            ['a'],
+            '@derek.com',
+            'tim@eliot',
+            'info@tim@parkin.co.uk',
+            ]
+        check_fail('function', self, self.fn, values)
+        check_fail('class', self, self.class_fn, values)
+
+class TestURL(unittest.TestCase):
+
+    type='URL'
+    fn = staticmethod(validate.url)
+    class_fn = validate.URL()
+
+    def test_validate_pass(self):
+        self.section='pass'
+        values = [
+            'foo.com',
+            #'192,168.1.1',#Fails at the moment
+            None,
+            ]
+        check_pass('function',self, self.fn, values)
+        check_pass('class', self, self.class_fn, values)
+
+    def test_validate_fail(self):
+        self.section='fail'
+        values = [
+            1,
+            1.01,
+            ['a','b','c'],
+            ['a'],
+            '@derek.com',
+            'tim@eliot',
+            'htt-p://google.com',
+            ]
+        check_fail('function', self, self.fn, values)
+        check_fail('class', self, self.class_fn, values)
+
+    def test_validate_pass_withoutscheme(self):
+        fn = lambda v: validate.url(v, with_scheme=True)
+        self.section='pass'
+        values = [
+            'http://foo.com',
+            ]
+        check_pass('function', self, fn, values)
+
+
+    def test_validate_withoutscheme(self):
+        fn = lambda v: validate.url(v, with_scheme=True)
+        self.section='fail'
+        values = [
+            'foo.com',
+            ]
+        check_fail('function', self, fn, values)
+
+
 class TestNumber(unittest.TestCase):
 
     type='Number'
     fn = staticmethod(validate.number)
-    class_fn = validate.Number().validate
+    class_fn = validate.Number()
 
     def test_validate_pass(self):
         self.section='pass'
@@ -125,7 +302,7 @@ class TestRequired(unittest.TestCase):
 
     type='Required'
     fn = staticmethod(validate.required)
-    class_fn = validate.Required().validate
+    class_fn = validate.Required()
 
     def test_validate_pass(self):
         self.section='pass'
@@ -154,13 +331,13 @@ class TestOneOf(unittest.TestCase):
 
     type='OneOf'
     fn = staticmethod( lambda v: staticmethod(validate.oneof(v,[3,5,7,9])))
-    class_fn = validate.OneOf([3,5,7,9]).validate
+    class_fn = validate.OneOf([3,5,7,9])
 
     fn_chars = staticmethod( lambda v: staticmethod(validate.oneof(v,'ynsbl')))
-    class_fn_chars = validate.OneOf('ynsbl').validate
+    class_fn_chars = validate.OneOf('ynsbl')
 
     fn_list_tuples = staticmethod( lambda v: staticmethod(validate.oneof(v,[(1,2),(3,4),(5,6)])))
-    class_fn_list_tuples = validate.OneOf([(1,2),(3,4),(5,6)]).validate
+    class_fn_list_tuples = validate.OneOf([(1,2),(3,4),(5,6)])
 
     def test_validate_pass(self):
         self.section='pass'
@@ -255,7 +432,7 @@ class TestOneOf(unittest.TestCase):
 
     def test_validate_emptyset(self):
         self.section='fail'
-        class_fn = validate.OneOf([]).validate
+        class_fn = validate.OneOf([])
         values = [
             (1,2),
             (3,4),
@@ -270,10 +447,10 @@ class TestLength(unittest.TestCase):
     type = 'Length'
 
     fn_min = staticmethod( lambda v: validate.length(v, min=3) )
-    class_fn_min = validate.Length(min=3).validate
+    class_fn_min = validate.Length(min=3)
 
     fn_max = staticmethod( lambda v: validate.length(v, max=3) )
-    class_fn_max = validate.Length(max=3).validate
+    class_fn_max = validate.Length(max=3)
 
     def test_validate_min_pass(self):
         self.section='pass'
@@ -341,13 +518,13 @@ class TestRange(unittest.TestCase):
     type = 'Range'
 
     fn_min = staticmethod( lambda v: validate.range(v, min=3) )
-    class_fn_min = validate.Range(min=3).validate
+    class_fn_min = validate.Range(min=3)
 
     fn_max = staticmethod( lambda v: validate.range(v, max=3) )
-    class_fn_max = validate.Range(max=3).validate
+    class_fn_max = validate.Range(max=3)
 
     fn_between = staticmethod( lambda v: validate.range(v, min=1,max=3) )
-    class_fn_between = validate.Range(min=1,max=3).validate
+    class_fn_between = validate.Range(min=1,max=3)
 
     def test_validate_min_pass(self):
         self.section='pass'
@@ -439,7 +616,7 @@ class TestRange(unittest.TestCase):
 class TestAll_StringRequired(unittest.TestCase):
 
     type='All'
-    fn = validate.All(validate.String(), validate.Required()).validate
+    fn = validate.All(validate.String(), validate.Required())
 
     def test_validate_pass(self):
         self.section='pass'
@@ -476,7 +653,7 @@ class TestAll_StringRequired(unittest.TestCase):
 class TestAny_IntegerString(unittest.TestCase):
 
     type='Any'
-    fn = validate.Any(validate.String(), validate.Integer()).validate
+    fn = validate.Any(validate.String(), validate.Integer())
 
     def test_validate_pass(self):
         self.section='pass'
@@ -515,7 +692,7 @@ class Test_RequiredAndIntegerOrString(unittest.TestCase):
                 validate.String(), 
                 validate.Integer()
             )
-        ).validate
+        )
 
     def test_validate_pass(self):
         self.section='pass'
@@ -543,179 +720,27 @@ class Test_RequiredAndIntegerOrString(unittest.TestCase):
             assert 'string' in ''.join(e.errors)
             assert 'integer' in ''.join(e.errors)
 
-class TestPlainText(unittest.TestCase):
+class TestAlways(unittest.TestCase):
 
-    type='PlainText'
-    fn = staticmethod(validate.plaintext)
-    class_fn = validate.PlainText().validate
-
-    fn_extra_underline = staticmethod( lambda v: validate.plaintext(v,extra='_') )
-    class_fn_extra_underline = validate.PlainText(extra='_').validate
-
-    fn_extra_hyphen = staticmethod( lambda v: validate.plaintext(v,extra='-') )
-    class_fn_extra_hyphen = validate.PlainText(extra='-').validate
+    type='Always'
+    class_fn = validate.Always()
 
     def test_validate_pass(self):
         self.section='pass'
         values = [
             'foo',
-            'a99',
-            '99a',
-            '99',
+            '1',
+            u'foobar',
+            'sad',
+            None,
+            1,
+            datetime.now(),
             '',
-            None,
+            [],
+            -1,
             ]
-        check_pass('function',self, self.fn, values)
         check_pass('class', self, self.class_fn, values)
-
-    def test_validate_fail(self):
-        self.section='pass'
-        values = [
-            1,
-            1.01,
-            ['a','b','c'],
-            ['a'],
-            'rew_',
-            'a-',
-            'a f',
-            ]
-        check_fail('function', self, self.fn, values)
-        check_fail('class', self, self.class_fn, values)
-
-    def test_validate_underline_pass(self):
-        self.section='pass'
-        values = [
-            'foo',
-            'a99',
-            '99a',
-            'rew_',
-            '99',
-            '',
-            '_',
-            None,
-            ]
-        check_pass('function',self, self.fn_extra_underline, values)
-        check_pass('class', self, self.class_fn_extra_underline, values)
-
-    def test_validate_underline_fail(self):
-        self.section='fail'
-        values = [
-            1,
-            1.01,
-            ['a','b','c'],
-            ['a'],
-            'a-',
-            'a f',
-            ]
-        check_fail('function', self, self.fn_extra_underline, values)
-        check_fail('class', self, self.class_fn_extra_underline, values)
-
-    def test_validate_hyphen_pass(self):
-        self.section='pass'
-        values = [
-            'foo',
-            'a99',
-            '99a',
-            '99',
-            '',
-            None,
-            'a-',
-            '-',
-            ]
-        check_pass('function',self, self.fn_extra_hyphen, values)
-        check_pass('class', self, self.class_fn_extra_hyphen, values)
-
-    def test_validate_hyphen_fail(self):
-        self.section='fail'
-        values = [
-            1,
-            1.01,
-            ['a','b','c'],
-            ['a'],
-            'a f',
-            'rew_',
-            '_',
-            ]
-        check_fail('function', self, self.fn_extra_hyphen, values)
-        check_fail('class', self, self.class_fn_extra_hyphen, values)
-
-
-
-class TestEmail(unittest.TestCase):
-
-    type='Email'
-    fn = staticmethod(validate.email)
-    class_fn = validate.Email().validate
-
-    def test_validate_pass(self):
-        self.section='pass'
-        values = [
-            'r@t.p',
-            'info@timparkin.co.uk',
-            #'root@192.168.1.1', # Failing at the moment - get a better regexp
-            None,
-            ]
-        check_pass('function',self, self.fn, values)
-        check_pass('class', self, self.class_fn, values)
-
-    def test_validate_fail(self):
-        self.section='pass'
-        values = [
-            1,
-            1.01,
-            ['a','b','c'],
-            ['a'],
-            '@derek.com',
-            'tim@eliot',
-            'info@tim@parkin.co.uk',
-            ]
-        check_fail('function', self, self.fn, values)
-        check_fail('class', self, self.class_fn, values)
-
-class TestURL(unittest.TestCase):
-
-    type='URL'
-    fn = staticmethod(validate.url)
-    class_fn = validate.URL().validate
-
-    def test_validate_pass(self):
-        self.section='pass'
-        values = [
-            'foo.com',
-            #'192,168.1.1',#Fails at the moment
-            None,
-            ]
-        check_pass('function',self, self.fn, values)
-        check_pass('class', self, self.class_fn, values)
-
-    def test_validate_fail(self):
-        self.section='fail'
-        values = [
-            1,
-            1.01,
-            ['a','b','c'],
-            ['a'],
-            '@derek.com',
-            'tim@eliot',
-            'htt-p://google.com',
-            ]
-        check_fail('function', self, self.fn, values)
-        check_fail('class', self, self.class_fn, values)
-
-    def test_validate_pass_withoutscheme(self):
-        fn = lambda v: validate.url(v, with_scheme=True)
-        self.section='pass'
-        values = [
-            'http://foo.com',
-            ]
-        check_pass('function', self, fn, values)
-
-
-    def test_validate_withoutscheme(self):
-        fn = lambda v: validate.url(v, with_scheme=True)
-        self.section='fail'
-        values = [
-            'foo.com',
-            ]
-        check_fail('function', self, fn, values)
+        if validate.Always():
+            self.fail("Always should have non-zero")
+ 
 

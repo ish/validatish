@@ -41,7 +41,7 @@ class Invalid(Exception):
 class Validator(object):
     """ Abstract Base class for all validators """
 
-    def validate(self, value):
+    def __call__(self, value):
         """ A method that will raise an Invalid error """
 
 
@@ -62,7 +62,7 @@ def string(v):
 class String(Validator):
     """ Checks whether value can be converted to an integer  """
 
-    def validate(self, v):
+    def __call__(self, v):
         string(v)
 
 
@@ -92,7 +92,7 @@ class PlainText(Validator):
     """ Checks whether value is a 'simple' string"""
     def __init__(self, extra=''):
         self.extra = extra
-    def validate(self, v):
+    def __call__(self, v):
         plaintext(v,extra=self.extra)
 
 
@@ -112,7 +112,7 @@ def integer(v):
 class Integer(Validator):
     """ Checks whether value can be converted to an integer  """
 
-    def validate(self, v):
+    def __call__(self, v):
         integer(v)
 
 
@@ -133,7 +133,7 @@ def number(v):
 class Number(Validator):
     """ Checks whether value can be converted to a number and is not a string  """
 
-    def validate(self, v):
+    def __call__(self, v):
         number(v)
 
 ##
@@ -159,7 +159,7 @@ def email(v):
 class Email(Validator):
     """ Checks whether value can be converted to a number and is not a string  """
 
-    def validate(self, v):
+    def __call__(self, v):
         email(v)
 
 ##
@@ -198,7 +198,7 @@ class URL(Validator):
     def __init__(self, with_scheme=False):
         self.with_scheme = with_scheme
 
-    def validate(self, v):
+    def __call__(self, v):
         url(v, with_scheme=self.with_scheme)
 
 
@@ -222,7 +222,7 @@ class OneOf(Validator):
     def __init__(self, set_of_values):
         self.set_of_values = set_of_values
 
-    def validate(self, v):
+    def __call__(self, v):
         oneof(v, self.set_of_values)
 
 
@@ -237,7 +237,7 @@ class Required(Validator):
     """ Checks that the value is not empty
     """
 
-    def validate(self, v):
+    def __call__(self, v):
         required(v)
 
 
@@ -262,7 +262,7 @@ class Length(Validator):
         self.max = max
         self.min = min
 
-    def validate(self, v):
+    def __call__(self, v):
         length(v, min=self.min, max=self.max)
 
 ##
@@ -289,7 +289,7 @@ class Range(Validator):
         self.max = max
         self.min = min
 
-    def validate(self, v):
+    def __call__(self, v):
         range(v, min=self.min, max=self.max)
 
 
@@ -301,11 +301,11 @@ class Any(CompoundValidator):
     def __init__(self, *args):
         self.validators=args
 
-    def validate(self, v):
+    def __call__(self, v):
         exceptions = []
         for validator in self.validators:
             try:
-                validator.validate(v)
+                validator(v)
             except Invalid, e :
                 exceptions.append(e)
             else:
@@ -321,11 +321,11 @@ class All(CompoundValidator):
     def __init__(self, *args):
         self.validators = args
 
-    def validate(self, v):
+    def __call__(self, v):
         exceptions = []
         for validator in self.validators:
             try:
-                validator.validate(v)
+                validator(v)
             except Invalid, e:
                 exceptions.append(e)
 
@@ -333,5 +333,20 @@ class All(CompoundValidator):
             raise Invalid("%s is not valid"%v, exceptions)
 
 
+##
+# Always
 
+class Always(Validator):
+    """
+    A validator that always passes, mostly useful as a default.
+
+    This validator tests False to make it seem "invisible" to discourage anyone
+    bothering actually calling it.
+    """
+
+    def __call__(self, v):
+        pass
+
+    def __nonzero__(self):
+        return False
         
