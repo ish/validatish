@@ -1,4 +1,4 @@
-import re, sys
+import re
 from sets import Set
 
 # Flatten function from http://mail.python.org/pipermail/python-list/2003-October/232886.html

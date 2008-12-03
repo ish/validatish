@@ -1,4 +1,4 @@
-import unittest, sys
+import unittest
 from validatish import validate
 from datetime import datetime
 
