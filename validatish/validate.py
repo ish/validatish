@@ -267,6 +267,8 @@ class Required(Validator):
 # LENGTH
 
 def length(v, min=None, max=None):
+    if v is None:
+        return
     if min is None and max is None:
         return
     if isinstance(v,basestring):
@@ -332,7 +334,7 @@ class Any(CompoundValidator):
                 exceptions.append(e)
             else:
                 return
-        raise Invalid("%s is not valid"%v, exceptions)
+        raise Invalid("is not valid", exceptions)
 
 
 ##
@@ -352,7 +354,7 @@ class All(CompoundValidator):
                 exceptions.append(e)
 
         if len(exceptions):
-            raise Invalid("%s is not valid"%v, exceptions)
+            raise Invalid("is not valid", exceptions)
 
 
 ##
