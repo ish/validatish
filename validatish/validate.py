@@ -47,6 +47,7 @@ class Validator(object):
 
 class CompoundValidator(Validator):
     """ Abstract Base class for compound validators """
+    validators = None
 
 
 ##
