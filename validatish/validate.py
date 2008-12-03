@@ -1,94 +1,30 @@
+"""
+Library of basic validation functions.
+"""
+
 import re
-from sets import Set
+
+from validatish.error import Invalid
 
 
-def validation_includes(validator, validator_type):
-    """
-    Test if the validator type exists in the validator graph.
-    """
-    if validator is None:
-        return False
-    elif isinstance(validator, validator_type):
-        return True
-    elif isinstance(validator, All):
-        return any(validation_includes(v, validator_type) for v in validator.validators)
-    elif isinstance(validator, Any):
-        included = any(validation_includes(v, validator_type) for v in validator.validators)
-        same_type = all(isinstance(v, validator_type) for v in validator.validators)
-        return included and same_type
-    return False
+def is_required(v):
+    # XXX I still think it would be nicer if this just tested "is None". We did
+    # discuss about the empty string "", but that's more of an input problem I
+    # think, e.g. how does a higher layer interpret something that has not been
+    # entered.
+    if not v and v != 0:
+        raise Invalid("is required")
 
 
-# Flatten function from http://mail.python.org/pipermail/python-list/2003-October/232886.html
-def flatten(s, toiter=iter):
-    try:
-        it = toiter(s)
-    except TypeError:
-        yield s
-    else:
-        for elem in it:
-            for subelem in flatten(elem, toiter):
-                yield subelem
-
-def keepstrings(seq):
-    if isinstance(seq, basestring):
-        raise TypeError
-    return iter(seq)
-
-
-
-class Invalid(Exception):
-
-    def __init__(self, msg, exceptions=None):
-        self.msg = msg
-        self.exceptions = exceptions
-
-    @property
-    def errors(self):
-        return list(flatten(self._fetch_errors(),keepstrings))
-
-    def _fetch_errors(self):
-        if self.exceptions is None:
-            yield self.msg
-        else:
-            for e in self.exceptions:
-                yield e._fetch_errors()
-
-
-
-class Validator(object):
-    """ Abstract Base class for all validators """
-
-    def __call__(self, value):
-        """ A method that will raise an Invalid error """
-
-
-class CompoundValidator(Validator):
-    """ Abstract Base class for compound validators """
-    validators = None
-
-
-##
-# STRING
-
-def string(v):
+def is_string(v):
     if v is None:
         return
     msg = "must be a string"
     if not isinstance(v,basestring):
         raise Invalid(msg)
 
-class String(Validator):
-    """ Checks whether value can be converted to an integer  """
 
-    def __call__(self, v):
-        string(v)
-
-
-##
-# PLAIN TEXT
-
-def plaintext(v,extra=''):
+def is_plaintext(v,extra=''):
     if v is None:
         return
     if not extra:
@@ -107,18 +43,8 @@ def plaintext(v,extra=''):
     if not p.match(v):
         raise Invalid(msg)
 
-class PlainText(Validator):
-    """ Checks whether value is a 'simple' string"""
-    def __init__(self, extra=''):
-        self.extra = extra
-    def __call__(self, v):
-        plaintext(v,extra=self.extra)
 
-
-##
-# INTEGER
-
-def integer(v):
+def is_integer(v):
     if v is None:
         return
     msg = "must be an integer"
@@ -127,18 +53,9 @@ def integer(v):
             raise Invalid(msg)
     except (ValueError, TypeError):
         raise Invalid(msg)
-    
-class Integer(Validator):
-    """ Checks whether value can be converted to an integer  """
-
-    def __call__(self, v):
-        integer(v)
 
 
-##
-# NUMBER
-
-def number(v):
+def is_number(v):
     if v is None:
         return
     msg = "must be a number"
@@ -149,16 +66,8 @@ def number(v):
     except (ValueError, TypeError):
         raise Invalid(msg)
 
-class Number(Validator):
-    """ Checks whether value can be converted to a number and is not a string  """
 
-    def __call__(self, v):
-        number(v)
-
-##
-# EMAIL
-
-def email(v):
+def is_email(v):
     if v is None:
         return
     msg = "must be an email"
@@ -175,16 +84,8 @@ def email(v):
     if not addressRE.search(address):
         raise Invalid('address part after the @ is incorrect')
 
-class Email(Validator):
-    """ Checks whether value can be converted to a number and is not a string  """
 
-    def __call__(self, v):
-        email(v)
-
-##
-# URL
-
-def url(v,with_scheme=False):
+def is_url(v,with_scheme=False):
     if v is None:
         return
     msg = "must be a url"
@@ -209,83 +110,31 @@ def url(v,with_scheme=False):
     v = match.group(0).lower() + v[len(match.group(0)):]
     if not urlRE.search(v):
         raise Invalid(msg)
-                             
 
 
-class URL(Validator):
-    """ Checks whether value is a url"""
-    def __init__(self, with_scheme=False):
-        self.with_scheme = with_scheme
-
-    def __call__(self, v):
-        url(v, with_scheme=self.with_scheme)
-
-
-##
-# EQUALS
-
-def equals(v, equal_to):
+def is_equal(v, compared_to):
     """
-    Check the value, v, is equal to the comparison value, equal_to.
+    Check the value, v, is equal to the comparison value.
     """
-    if v is None or v == equal_to:
+    if v is None or v == compared_to:
         return
     raise Invalid("incorrect")
 
 
-class Equals(Validator):
-    """
-    Validator that checks a value is equal to the comparison value, equal_to.
-    """
-    def __init__(self, equal_to):
-        self.equal_to = equal_to
-    def __call__(self, v):
-        equals(v, self.equal_to)
-
-
-##
-# ONE OF
-
-def oneof(v,set_of_values):
+def is_one_of(v, set_of_values):
     if v is None:
         return
     if not set_of_values:
         raise Invalid("must be one of []")
+    # XXX what's the following doing?
     if isinstance(v,list):
         v = tuple(v)
-
-    if v not in Set(set_of_values):
-        raise Invalid("must be one of %s"%set_of_values)
-    
-
-class OneOf(Validator):
-    """ Checks whether value is one of a supplied list of values"""
-    def __init__(self, set_of_values):
-        self.set_of_values = set_of_values
-
-    def __call__(self, v):
-        oneof(v, self.set_of_values)
+    # XXX Why create a set here?
+    if v not in set(set_of_values):
+        raise Invalid("must be one of %r"%set_of_values)
 
 
-##
-# REQUIRED
-
-def required(v):
-    if not v and v != 0:
-        raise Invalid("is required")
-
-class Required(Validator):
-    """ Checks that the value is not empty
-    """
-
-    def __call__(self, v):
-        required(v)
-
-
-##
-# LENGTH
-
-def length(v, min=None, max=None):
+def has_length(v, min=None, max=None):
     if v is None:
         return
     if min is None and max is None:
@@ -299,19 +148,8 @@ def length(v, min=None, max=None):
     if min is not None and len(v) < min:
         raise Invalid(error%("more",min))
 
-class Length(Validator):
 
-    def __init__(self, min=None, max=None):
-        self.max = max
-        self.min = min
-
-    def __call__(self, v):
-        length(v, min=self.min, max=self.max)
-
-##
-# RANGE
-
-def range(v, min=None, max=None):
+def is_in_range(v, min=None, max=None):
     if min is None and max is None:
         return
     if min is not None and max is not None:
@@ -326,70 +164,3 @@ def range(v, min=None, max=None):
     if min is not None and v < min:
         raise Invalid(error)
 
-class Range(Validator):
-
-    def __init__(self, min=None, max=None):
-        self.max = max
-        self.min = min
-
-    def __call__(self, v):
-        range(v, min=self.min, max=self.max)
-
-
-##
-# ANY
-
-class Any(CompoundValidator):
-
-    def __init__(self, *args):
-        self.validators=args
-
-    def __call__(self, v):
-        exceptions = []
-        for validator in self.validators:
-            try:
-                validator(v)
-            except Invalid, e :
-                exceptions.append(e)
-            else:
-                return
-        raise Invalid("is not valid", exceptions)
-
-
-##
-# ALL
-
-class All(CompoundValidator):
-
-    def __init__(self, *args):
-        self.validators = args
-
-    def __call__(self, v):
-        exceptions = []
-        for validator in self.validators:
-            try:
-                validator(v)
-            except Invalid, e:
-                exceptions.append(e)
-
-        if len(exceptions):
-            raise Invalid("is not valid", exceptions)
-
-
-##
-# Always
-
-class Always(Validator):
-    """
-    A validator that always passes, mostly useful as a default.
-
-    This validator tests False to make it seem "invisible" to discourage anyone
-    bothering actually calling it.
-    """
-
-    def __call__(self, v):
-        pass
-
-    def __nonzero__(self):
-        return False
-        

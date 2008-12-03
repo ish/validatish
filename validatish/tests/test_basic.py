@@ -1,5 +1,5 @@
 import unittest
-from validatish import validate
+from validatish import error, validate, validator, util
 from datetime import datetime
 
 
@@ -25,7 +25,7 @@ def check_fail(type, self, fn, values):
         try:
             fn(v)
             self.fail(error_message(type,self,v,'incorrectly passed validation'))
-        except validate.Invalid:
+        except error.Invalid:
             continue
         except AssertionError:
             raise
@@ -33,8 +33,8 @@ def check_fail(type, self, fn, values):
 class TestString(unittest.TestCase):
 
     type='String'
-    fn = staticmethod(validate.string)
-    class_fn = validate.String()
+    fn = staticmethod(validate.is_string)
+    class_fn = validator.String()
 
     def test_validate_pass(self):
         self.section='pass'
@@ -63,8 +63,8 @@ class TestString(unittest.TestCase):
 class TestInteger(unittest.TestCase):
 
     type='Integer'
-    fn = staticmethod(validate.integer)
-    class_fn = validate.Integer()
+    fn = staticmethod(validate.is_integer)
+    class_fn = validator.Integer()
 
     def test_validate_pass(self):
         self.section='pass'
@@ -92,14 +92,14 @@ class TestInteger(unittest.TestCase):
 class TestPlainText(unittest.TestCase):
 
     type='PlainText'
-    fn = staticmethod(validate.plaintext)
-    class_fn = validate.PlainText()
+    fn = staticmethod(validate.is_plaintext)
+    class_fn = validator.PlainText()
 
-    fn_extra_underline = staticmethod( lambda v: validate.plaintext(v,extra='_') )
-    class_fn_extra_underline = validate.PlainText(extra='_')
+    fn_extra_underline = staticmethod( lambda v: validate.is_plaintext(v,extra='_') )
+    class_fn_extra_underline = validator.PlainText(extra='_')
 
-    fn_extra_hyphen = staticmethod( lambda v: validate.plaintext(v,extra='-') )
-    class_fn_extra_hyphen = validate.PlainText(extra='-')
+    fn_extra_hyphen = staticmethod( lambda v: validate.is_plaintext(v,extra='-') )
+    class_fn_extra_hyphen = validator.PlainText(extra='-')
 
     def test_validate_pass(self):
         self.section='pass'
@@ -190,8 +190,8 @@ class TestPlainText(unittest.TestCase):
 class TestEmail(unittest.TestCase):
 
     type='Email'
-    fn = staticmethod(validate.email)
-    class_fn = validate.Email()
+    fn = staticmethod(validate.is_email)
+    class_fn = validator.Email()
 
     def test_validate_pass(self):
         self.section='pass'
@@ -221,8 +221,8 @@ class TestEmail(unittest.TestCase):
 class TestURL(unittest.TestCase):
 
     type='URL'
-    fn = staticmethod(validate.url)
-    class_fn = validate.URL()
+    fn = staticmethod(validate.is_url)
+    class_fn = validator.URL()
 
     def test_validate_pass(self):
         self.section='pass'
@@ -249,7 +249,7 @@ class TestURL(unittest.TestCase):
         check_fail('class', self, self.class_fn, values)
 
     def test_validate_pass_withoutscheme(self):
-        fn = lambda v: validate.url(v, with_scheme=True)
+        fn = lambda v: validate.is_url(v, with_scheme=True)
         self.section='pass'
         values = [
             'http://foo.com',
@@ -258,7 +258,7 @@ class TestURL(unittest.TestCase):
 
 
     def test_validate_withoutscheme(self):
-        fn = lambda v: validate.url(v, with_scheme=True)
+        fn = lambda v: validate.is_url(v, with_scheme=True)
         self.section='fail'
         values = [
             'foo.com',
@@ -269,8 +269,8 @@ class TestURL(unittest.TestCase):
 class TestNumber(unittest.TestCase):
 
     type='Number'
-    fn = staticmethod(validate.number)
-    class_fn = validate.Number()
+    fn = staticmethod(validate.is_number)
+    class_fn = validator.Number()
 
     def test_validate_pass(self):
         self.section='pass'
@@ -301,8 +301,8 @@ class TestNumber(unittest.TestCase):
 class TestRequired(unittest.TestCase):
 
     type='Required'
-    fn = staticmethod(validate.required)
-    class_fn = validate.Required()
+    fn = staticmethod(validate.is_required)
+    class_fn = validator.Required()
 
     def test_validate_pass(self):
         self.section='pass'
@@ -331,8 +331,8 @@ class TestRequired(unittest.TestCase):
 class TestEquals(unittest.TestCase):
 
     type = 'Equals'
-    fn = staticmethod(lambda v: validate.equals(v, 'matches this'))
-    class_fn = validate.Equals('matches this')
+    fn = staticmethod(lambda v: validate.is_equal(v, 'matches this'))
+    class_fn = validator.Equal('matches this')
 
     def test_validate_pass(self):
         self.section='pass'
@@ -361,14 +361,14 @@ class TestEquals(unittest.TestCase):
 class TestOneOf(unittest.TestCase):
 
     type='OneOf'
-    fn = staticmethod( lambda v: staticmethod(validate.oneof(v,[3,5,7,9])))
-    class_fn = validate.OneOf([3,5,7,9])
+    fn = staticmethod( lambda v: staticmethod(validate.is_one_of(v,[3,5,7,9])))
+    class_fn = validator.OneOf([3,5,7,9])
 
-    fn_chars = staticmethod( lambda v: staticmethod(validate.oneof(v,'ynsbl')))
-    class_fn_chars = validate.OneOf('ynsbl')
+    fn_chars = staticmethod( lambda v: staticmethod(validate.is_one_of(v,'ynsbl')))
+    class_fn_chars = validator.OneOf('ynsbl')
 
-    fn_list_tuples = staticmethod( lambda v: staticmethod(validate.oneof(v,[(1,2),(3,4),(5,6)])))
-    class_fn_list_tuples = validate.OneOf([(1,2),(3,4),(5,6)])
+    fn_list_tuples = staticmethod( lambda v: staticmethod(validate.is_one_of(v,[(1,2),(3,4),(5,6)])))
+    class_fn_list_tuples = validator.OneOf([(1,2),(3,4),(5,6)])
 
     def test_validate_pass(self):
         self.section='pass'
@@ -463,7 +463,7 @@ class TestOneOf(unittest.TestCase):
 
     def test_validate_emptyset(self):
         self.section='fail'
-        class_fn = validate.OneOf([])
+        class_fn = validator.OneOf([])
         values = [
             (1,2),
             (3,4),
@@ -477,11 +477,11 @@ class TestLength(unittest.TestCase):
 
     type = 'Length'
 
-    fn_min = staticmethod( lambda v: validate.length(v, min=3) )
-    class_fn_min = validate.Length(min=3)
+    fn_min = staticmethod( lambda v: validate.has_length(v, min=3) )
+    class_fn_min = validator.Length(min=3)
 
-    fn_max = staticmethod( lambda v: validate.length(v, max=3) )
-    class_fn_max = validate.Length(max=3)
+    fn_max = staticmethod( lambda v: validate.has_length(v, max=3) )
+    class_fn_max = validator.Length(max=3)
 
     def test_validate_min_pass(self):
         self.section='pass'
@@ -530,32 +530,32 @@ class TestLength(unittest.TestCase):
     def test_messages(self):
         try:
             self.fn_min('')
-        except validate.Invalid, e:
+        except error.Invalid, e:
             assert 'more' in e.msg
         try:
             self.fn_max('aaaaaaaaaa')
-        except validate.Invalid, e:
+        except error.Invalid, e:
             assert 'less' in e.msg
 
     def test_noattrs(self):
         try:
-            validate.length(1)
+            validate.has_length(1)
         except:
-            self.fail('unexpected error using no attrs for validate.length')
+            self.fail('unexpected error using no attrs for validate.has_length')
             
 
 class TestRange(unittest.TestCase):
 
     type = 'Range'
 
-    fn_min = staticmethod( lambda v: validate.range(v, min=3) )
-    class_fn_min = validate.Range(min=3)
+    fn_min = staticmethod( lambda v: validate.is_in_range(v, min=3) )
+    class_fn_min = validator.Range(min=3)
 
-    fn_max = staticmethod( lambda v: validate.range(v, max=3) )
-    class_fn_max = validate.Range(max=3)
+    fn_max = staticmethod( lambda v: validate.is_in_range(v, max=3) )
+    class_fn_max = validator.Range(max=3)
 
-    fn_between = staticmethod( lambda v: validate.range(v, min=1,max=3) )
-    class_fn_between = validate.Range(min=1,max=3)
+    fn_between = staticmethod( lambda v: validate.is_in_range(v, min=1,max=3) )
+    class_fn_between = validator.Range(min=1,max=3)
 
     def test_validate_min_pass(self):
         self.section='pass'
@@ -625,29 +625,29 @@ class TestRange(unittest.TestCase):
     def test_messages(self):
         try:
             self.fn_min(-999999)
-        except validate.Invalid, e:
+        except error.Invalid, e:
             assert 'greater' in e.msg
         try:
             self.fn_max(999999)
-        except validate.Invalid, e:
+        except error.Invalid, e:
             assert 'less' in e.msg
         try:
             self.fn_between(-999999)
-        except validate.Invalid, e:
+        except error.Invalid, e:
             assert 'between' in e.msg
         
     def test_noattrs(self):
         try:
-            validate.range(1)
+            validate.is_in_range(1)
             return
         except:
             pass
-        self.fail('unexpected error using no attrs for validate.range')
+        self.fail('unexpected error using no attrs for validate.is_in_range')
 
 class TestAll_StringRequired(unittest.TestCase):
 
     type='All'
-    fn = validate.All(validate.String(), validate.Required())
+    fn = validator.All(validator.String(), validator.Required())
 
     def test_validate_pass(self):
         self.section='pass'
@@ -671,12 +671,12 @@ class TestAll_StringRequired(unittest.TestCase):
     def test_messages(self):
         try:
             self.fn(None)
-        except validate.Invalid, e:
+        except error.Invalid, e:
             self.assertEquals(len(e.errors),1)
             self.assertEquals('is required',e.errors[0])
         try:
             self.fn(1)
-        except validate.Invalid, e:
+        except error.Invalid, e:
             self.assertEquals(len(e.errors),1)
             self.assertEquals('must be a string',e.errors[0])
 
@@ -684,7 +684,7 @@ class TestAll_StringRequired(unittest.TestCase):
 class TestAny_IntegerString(unittest.TestCase):
 
     type='Any'
-    fn = validate.Any(validate.String(), validate.Integer())
+    fn = validator.Any(validator.String(), validator.Integer())
 
     def test_validate_pass(self):
         self.section='pass'
@@ -707,7 +707,7 @@ class TestAny_IntegerString(unittest.TestCase):
     def test_messages(self):
         try:
             self.fn(datetime.now())
-        except validate.Invalid, e:
+        except error.Invalid, e:
             self.assertEquals(len(e.errors),2)
             assert 'string' in ''.join(e.errors)
             assert 'integer' in ''.join(e.errors)
@@ -717,11 +717,11 @@ class TestAny_IntegerString(unittest.TestCase):
 class Test_RequiredAndIntegerOrString(unittest.TestCase):
 
     type='RequiredAndIntegerOrString'
-    fn = validate.All(
-            validate.Required(),
-            validate.Any(
-                validate.String(), 
-                validate.Integer()
+    fn = validator.All(
+            validator.Required(),
+            validator.Any(
+                validator.String(), 
+                validator.Integer()
             )
         )
 
@@ -746,7 +746,7 @@ class Test_RequiredAndIntegerOrString(unittest.TestCase):
     def test_messages(self):
         try:
             self.fn(datetime.now())
-        except validate.Invalid, e:
+        except error.Invalid, e:
             self.assertEquals(len(e.errors),2)
             assert 'string' in ''.join(e.errors)
             assert 'integer' in ''.join(e.errors)
@@ -754,7 +754,7 @@ class Test_RequiredAndIntegerOrString(unittest.TestCase):
 class TestAlways(unittest.TestCase):
 
     type='Always'
-    class_fn = validate.Always()
+    class_fn = validator.Always()
 
     def test_validate_pass(self):
         self.section='pass'
@@ -771,7 +771,7 @@ class TestAlways(unittest.TestCase):
             -1,
             ]
         check_pass('class', self, self.class_fn, values)
-        if validate.Always():
+        if validator.Always():
             self.fail("Always should have non-zero")
 
 
@@ -781,8 +781,8 @@ class TestValidationIncludes(unittest.TestCase):
         """
         Check hunting amongst nothing always fails.
         """
-        assert not validate.validation_includes(None, validate.Required)
-        assert not validate.validation_includes(None, validate.Email)
+        assert not util.validation_includes(None, validator.Required)
+        assert not util.validation_includes(None, validator.Email)
 
     def test_with_functions(self):
         """
@@ -790,46 +790,46 @@ class TestValidationIncludes(unittest.TestCase):
         """
         def f(v):
             pass
-        assert not validate.validation_includes(f, validate.Required)
-        assert not validate.validation_includes(validate.All(f, f), validate.Required)
-        assert validate.validation_includes(validate.All(f, validate.Required()), validate.Required)
-        assert not validate.validation_includes(validate.Any(f, validate.Required()), validate.Required)
+        assert not util.validation_includes(f, validator.Required)
+        assert not util.validation_includes(validator.All(f, f), validator.Required)
+        assert util.validation_includes(validator.All(f, validator.Required()), validator.Required)
+        assert not util.validation_includes(validator.Any(f, validator.Required()), validator.Required)
 
     def test_immediate(self):
         """
         Check that the hunt succeeds when the searched for validator is exactly
         the same type.
         """
-        assert validate.validation_includes(validate.Required(), validate.Required)
-        assert not validate.validation_includes(validate.Required(), validate.Email)
+        assert util.validation_includes(validator.Required(), validator.Required)
+        assert not util.validation_includes(validator.Required(), validator.Email)
 
     def test_inside_all(self):
         """
         Check when inside an All.
         """
-        assert validate.validation_includes(validate.All(validate.Required()), validate.Required)
-        assert not validate.validation_includes(validate.All(validate.Required()), validate.Email)
+        assert util.validation_includes(validator.All(validator.Required()), validator.Required)
+        assert not util.validation_includes(validator.All(validator.Required()), validator.Email)
 
     def test_inside_any_with_others(self):
         """
         Check when inside an Any with other types.
         """
-        assert not validate.validation_includes(validate.Any(validate.Required(), validate.Email()), validate.Required)
-        assert not validate.validation_includes(validate.Any(validate.Required(), validate.Email()), validate.Email)
+        assert not util.validation_includes(validator.Any(validator.Required(), validator.Email()), validator.Required)
+        assert not util.validation_includes(validator.Any(validator.Required(), validator.Email()), validator.Email)
 
     def test_inside_any_on_own(self):
         """
         Check inside an Any, on own.
         """
-        assert validate.validation_includes(validate.Any(validate.Required()), validate.Required)
-        assert not validate.validation_includes(validate.Any(validate.Required()), validate.Email)
+        assert util.validation_includes(validator.Any(validator.Required()), validator.Required)
+        assert not util.validation_includes(validator.Any(validator.Required()), validator.Email)
 
     def test_inside_any_only_type(self):
         """
         Check inside an Any, amongst validators of same type.
         """
-        assert validate.validation_includes(validate.Any(validate.Required(), validate.Required()), validate.Required)
-        assert not validate.validation_includes(validate.Any(validate.Required(), validate.Required()), validate.Email)
+        assert util.validation_includes(validator.Any(validator.Required(), validator.Required()), validator.Required)
+        assert not util.validation_includes(validator.Any(validator.Required(), validator.Required()), validator.Email)
 
 
 # XXX check that functions can be used for validation
