@@ -399,7 +399,7 @@ class TestOneOf(unittest.TestCase):
         check_fail('function', self, self.fn, values)
         check_fail('class', self, self.class_fn, values)
 
-    def test_validate_pass(self):
+    def test_validate_chars_pass(self):
         self.section='pass'
         values = [
             'y',
@@ -410,7 +410,7 @@ class TestOneOf(unittest.TestCase):
         check_pass('function',self, self.fn_chars, values)
         check_pass('class', self, self.class_fn_chars, values)
 
-    def test_validate_fail(self):
+    def test_validate_chars_fail(self):
         self.section='fail'
         values = [
             'foo',
@@ -430,7 +430,7 @@ class TestOneOf(unittest.TestCase):
         check_fail('function', self, self.fn_chars, values)
         check_fail('class', self, self.class_fn_chars, values)
 
-    def test_validate_pass(self):
+    def test_validate_lists_pass(self):
         self.section='pass'
         values = [
             (1,2),
@@ -441,7 +441,7 @@ class TestOneOf(unittest.TestCase):
         check_pass('function',self, self.fn_list_tuples, values)
         check_pass('class', self, self.class_fn_list_tuples, values)
 
-    def test_validate_fail(self):
+    def test_validate_lists_fail(self):
         self.section='fail'
         values = [
             'foo',
