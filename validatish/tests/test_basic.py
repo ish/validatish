@@ -774,3 +774,63 @@ class TestAlways(unittest.TestCase):
         if validate.Always():
             self.fail("Always should have non-zero")
 
+
+class TestValidationIncludes(unittest.TestCase):
+
+    def test_no_validator(self):
+        """
+        Check hunting amongst nothing always fails.
+        """
+        assert not validate.validation_includes(None, validate.Required)
+        assert not validate.validation_includes(None, validate.Email)
+
+    def test_with_functions(self):
+        """
+        Check hunting doesn't explode with plain old functions.
+        """
+        def f(v):
+            pass
+        assert not validate.validation_includes(f, validate.Required)
+        assert not validate.validation_includes(validate.All(f, f), validate.Required)
+        assert validate.validation_includes(validate.All(f, validate.Required()), validate.Required)
+        assert not validate.validation_includes(validate.Any(f, validate.Required()), validate.Required)
+
+    def test_immediate(self):
+        """
+        Check that the hunt succeeds when the searched for validator is exactly
+        the same type.
+        """
+        assert validate.validation_includes(validate.Required(), validate.Required)
+        assert not validate.validation_includes(validate.Required(), validate.Email)
+
+    def test_inside_all(self):
+        """
+        Check when inside an All.
+        """
+        assert validate.validation_includes(validate.All(validate.Required()), validate.Required)
+        assert not validate.validation_includes(validate.All(validate.Required()), validate.Email)
+
+    def test_inside_any_with_others(self):
+        """
+        Check when inside an Any with other types.
+        """
+        assert not validate.validation_includes(validate.Any(validate.Required(), validate.Email()), validate.Required)
+        assert not validate.validation_includes(validate.Any(validate.Required(), validate.Email()), validate.Email)
+
+    def test_inside_any_on_own(self):
+        """
+        Check inside an Any, on own.
+        """
+        assert validate.validation_includes(validate.Any(validate.Required()), validate.Required)
+        assert not validate.validation_includes(validate.Any(validate.Required()), validate.Email)
+
+    def test_inside_any_only_type(self):
+        """
+        Check inside an Any, amongst validators of same type.
+        """
+        assert validate.validation_includes(validate.Any(validate.Required(), validate.Required()), validate.Required)
+        assert not validate.validation_includes(validate.Any(validate.Required(), validate.Required()), validate.Email)
+
+
+# XXX check that functions can be used for validation
+
