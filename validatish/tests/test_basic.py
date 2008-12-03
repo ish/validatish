@@ -327,6 +327,37 @@ class TestRequired(unittest.TestCase):
         check_fail('function', self, self.fn, values)
         check_fail('class', self, self.class_fn, values)
 
+
+class TestEquals(unittest.TestCase):
+
+    type = 'Equals'
+    fn = staticmethod(lambda v: validate.equals(v, 'matches this'))
+    class_fn = validate.Equals('matches this')
+
+    def test_validate_pass(self):
+        self.section='pass'
+        values = ['matches this']
+        check_pass('function',self, self.fn, values)
+        check_pass('class', self, self.class_fn, values)
+
+    def test_validate_fail(self):
+        self.section='fail'
+        values = [
+            'foo',
+            ['a','b','c'],
+            '1',
+            2,
+            4,
+            6,
+            8,
+            10,
+            '',
+            [],
+            ]
+        check_fail('function', self, self.fn, values)
+        check_fail('class', self, self.class_fn, values)
+
+
 class TestOneOf(unittest.TestCase):
 
     type='OneOf'

@@ -203,6 +203,28 @@ class URL(Validator):
 
 
 ##
+# EQUALS
+
+def equals(v, equal_to):
+    """
+    Check the value, v, is equal to the comparison value, equal_to.
+    """
+    if v is None or v == equal_to:
+        return
+    raise Invalid("incorrect")
+
+
+class Equals(Validator):
+    """
+    Validator that checks a value is equal to the comparison value, equal_to.
+    """
+    def __init__(self, equal_to):
+        self.equal_to = equal_to
+    def __call__(self, v):
+        equals(v, self.equal_to)
+
+
+##
 # ONE OF
 
 def oneof(v,set_of_values):
