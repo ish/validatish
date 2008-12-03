@@ -49,7 +49,7 @@ class TestString(unittest.TestCase):
         check_pass('class', self, self.class_fn, values)
 
     def test_validate_fail(self):
-        self.section='pass'
+        self.section='fail'
         values = [
             1,
             1.01,
@@ -79,7 +79,7 @@ class TestInteger(unittest.TestCase):
         check_pass('class', self, self.class_fn, values)
 
     def test_validate_fail(self):
-        self.section='pass'
+        self.section='fail'
         values = [
             1.01,
             'foo',
@@ -115,7 +115,7 @@ class TestPlainText(unittest.TestCase):
         check_pass('class', self, self.class_fn, values)
 
     def test_validate_fail(self):
-        self.section='pass'
+        self.section='fail'
         values = [
             1,
             1.01,
@@ -205,7 +205,7 @@ class TestEmail(unittest.TestCase):
         check_pass('class', self, self.class_fn, values)
 
     def test_validate_fail(self):
-        self.section='pass'
+        self.section='fail'
         values = [
             1,
             1.01,
@@ -289,7 +289,7 @@ class TestNumber(unittest.TestCase):
         check_pass('class', self, self.class_fn, values)
 
     def test_validate_fail(self):
-        self.section='pass'
+        self.section='fail'
         values = [
             'foo',
             ['a','b','c'],
@@ -383,7 +383,7 @@ class TestOneOf(unittest.TestCase):
         check_pass('class', self, self.class_fn, values)
 
     def test_validate_fail(self):
-        self.section='pass'
+        self.section='fail'
         values = [
             'foo',
             ['a','b','c'],
@@ -411,7 +411,7 @@ class TestOneOf(unittest.TestCase):
         check_pass('class', self, self.class_fn_chars, values)
 
     def test_validate_fail(self):
-        self.section='pass'
+        self.section='fail'
         values = [
             'foo',
             ['a','b','c'],
@@ -442,7 +442,7 @@ class TestOneOf(unittest.TestCase):
         check_pass('class', self, self.class_fn_list_tuples, values)
 
     def test_validate_fail(self):
-        self.section='pass'
+        self.section='fail'
         values = [
             'foo',
             ['a','b','c'],
@@ -773,5 +773,4 @@ class TestAlways(unittest.TestCase):
         check_pass('class', self, self.class_fn, values)
         if validate.Always():
             self.fail("Always should have non-zero")
- 
 
