@@ -5,9 +5,14 @@ Module containing package exception classes.
 
 class Invalid(Exception):
 
-    def __init__(self, msg, exceptions=None):
-        self.msg = msg
+    def __init__(self, message, exceptions=None):
+        Exception.__init__(self, message, exceptions)
+        self.message = message
         self.exceptions = exceptions
+
+    def __str__(self):
+        return self.message
+    __unicode__ = __str__
 
     @property
     def errors(self):
@@ -15,7 +20,7 @@ class Invalid(Exception):
 
     def _fetch_errors(self):
         if self.exceptions is None:
-            yield self.msg
+            yield self.message
         else:
             for e in self.exceptions:
                 yield e._fetch_errors()

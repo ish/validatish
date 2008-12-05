@@ -531,11 +531,11 @@ class TestLength(unittest.TestCase):
         try:
             self.fn_min('')
         except error.Invalid, e:
-            assert 'more' in e.msg
+            assert 'more' in e.message
         try:
             self.fn_max('aaaaaaaaaa')
         except error.Invalid, e:
-            assert 'less' in e.msg
+            assert 'less' in e.message
 
     def test_noattrs(self):
         try:
@@ -626,15 +626,15 @@ class TestRange(unittest.TestCase):
         try:
             self.fn_min(-999999)
         except error.Invalid, e:
-            assert 'greater' in e.msg
+            assert 'greater' in e.message
         try:
             self.fn_max(999999)
         except error.Invalid, e:
-            assert 'less' in e.msg
+            assert 'less' in e.message
         try:
             self.fn_between(-999999)
         except error.Invalid, e:
-            assert 'between' in e.msg
+            assert 'between' in e.message
         
     def test_noattrs(self):
         try:
