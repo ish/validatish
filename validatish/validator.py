@@ -96,6 +96,7 @@ class OneOf(Validator):
 
 
 class Length(Validator):
+    """ Check whether the length of the value is not outside min/max bound(s) """
 
     def __init__(self, min=None, max=None):
         self.max = max
@@ -106,6 +107,7 @@ class Length(Validator):
 
 
 class Range(Validator):
+    """ Check whether the value is not outside min/max bound(s) """
 
     def __init__(self, min=None, max=None):
         self.max = max
@@ -116,6 +118,7 @@ class Range(Validator):
 
 
 class Any(CompoundValidator):
+    """ Combines multiple validators together, raising an exception if any fail """
 
     def __init__(self, *args):
         self.validators=args
@@ -133,6 +136,7 @@ class Any(CompoundValidator):
 
 
 class All(CompoundValidator):
+    """ Combines multiple validators together, raising an exception if they all fail """
 
     def __init__(self, *args):
         self.validators = args
