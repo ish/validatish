@@ -1,0 +1,299 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>About Validatish &mdash; Validatish v1 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+          URL_ROOT:    '',
+          VERSION:     '1',
+          COLLAPSE_MODINDEX: false,
+          FILE_SUFFIX: '.html'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="Validatish v1 documentation" href="index.html" />
+    <link rel="prev" title="Welcome to Validatish&#8217;s documentation!" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to Validatish&#8217;s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Validatish v1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  
+  <div class="section" id="about-validatish">
+<h1>About Validatish<a class="headerlink" href="#about-validatish" title="Permalink to this headline">¶</a></h1>
+<p>Validatish is a validating library, initially built to support the Formish forms library.</p>
+<div class="section" id="how-does-validatish-work">
+<h2>How does Validatish work?<a class="headerlink" href="#how-does-validatish-work" title="Permalink to this headline">¶</a></h2>
+<p>Validatish is split into two main section, validate and validator. Validate is a set of functions that raise exceptions on failure and validator is a class wrapper around the validate library that also adds composite validators.</p>
+</div>
+<div class="section" id="the-validate-module">
+<h2>The Validate Module<a class="headerlink" href="#the-validate-module" title="Permalink to this headline">¶</a></h2>
+<p>Validate implements the following validators..</p>
+<dl class="function">
+<dt id="validatish.validate.is_required">
+<!--[validatish.validate.is_required]--><tt class="descclassname">validatish.validate.</tt><tt class="descname">is_required</tt><big>(</big><em>v</em><big>)</big><a class="headerlink" href="#validatish.validate.is_required" title="Permalink to this definition">¶</a></dt>
+<dd>Checks the non_zero attribute but allows numberic zero to pass</dd></dl>
+
+<dl class="function">
+<dt id="validatish.validate.is_string">
+<!--[validatish.validate.is_string]--><tt class="descclassname">validatish.validate.</tt><tt class="descname">is_string</tt><big>(</big><em>v</em><big>)</big><a class="headerlink" href="#validatish.validate.is_string" title="Permalink to this definition">¶</a></dt>
+<dd>checks that the value is an instance of basestring</dd></dl>
+
+<dl class="function">
+<dt id="validatish.validate.is_plaintext">
+<!--[validatish.validate.is_plaintext]--><tt class="descclassname">validatish.validate.</tt><tt class="descname">is_plaintext</tt><big>(</big><em>v</em>, <em>extra=''</em><big>)</big><a class="headerlink" href="#validatish.validate.is_plaintext" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks that the value contains only alpha-numberics</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><em>extra</em> &#8211; A list of extra characters that are allowed</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="validatish.validate.is_integer">
+<!--[validatish.validate.is_integer]--><tt class="descclassname">validatish.validate.</tt><tt class="descname">is_integer</tt><big>(</big><em>v</em><big>)</big><a class="headerlink" href="#validatish.validate.is_integer" title="Permalink to this definition">¶</a></dt>
+<dd>Checks that the value can be converted into an integer</dd></dl>
+
+<dl class="function">
+<dt id="validatish.validate.is_number">
+<!--[validatish.validate.is_number]--><tt class="descclassname">validatish.validate.</tt><tt class="descname">is_number</tt><big>(</big><em>v</em><big>)</big><a class="headerlink" href="#validatish.validate.is_number" title="Permalink to this definition">¶</a></dt>
+<dd>Checks that the value is not a string but can be converted to a float</dd></dl>
+
+<dl class="function">
+<dt id="validatish.validate.is_email">
+<!--[validatish.validate.is_email]--><tt class="descclassname">validatish.validate.</tt><tt class="descname">is_email</tt><big>(</big><em>v</em><big>)</big><a class="headerlink" href="#validatish.validate.is_email" title="Permalink to this definition">¶</a></dt>
+<dd>Uses a simple regex from FormEncode to check for an email</dd></dl>
+
+<dl class="function">
+<dt id="validatish.validate.is_url">
+<!--[validatish.validate.is_url]--><tt class="descclassname">validatish.validate.</tt><tt class="descname">is_url</tt><big>(</big><em>v</em>, <em>with_scheme=False</em><big>)</big><a class="headerlink" href="#validatish.validate.is_url" title="Permalink to this definition">¶</a></dt>
+<dd>Uses a simple regex from FormEncode to check for a url</dd></dl>
+
+<dl class="function">
+<dt id="validatish.validate.is_equal">
+<!--[validatish.validate.is_equal]--><tt class="descclassname">validatish.validate.</tt><tt class="descname">is_equal</tt><big>(</big><em>v</em>, <em>compared_to</em><big>)</big><a class="headerlink" href="#validatish.validate.is_equal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check the value, v, is equal to the comparison value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><em>compared_to</em> &#8211; the value to compare to</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="validatish.validate.is_one_of">
+<!--[validatish.validate.is_one_of]--><tt class="descclassname">validatish.validate.</tt><tt class="descname">is_one_of</tt><big>(</big><em>v</em>, <em>set_of_values</em><big>)</big><a class="headerlink" href="#validatish.validate.is_one_of" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check that the value is one of the set of values given</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><em>set_of_values</em> &#8211; the set of values to check against</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="validatish.validate.has_length">
+<!--[validatish.validate.has_length]--><tt class="descclassname">validatish.validate.</tt><tt class="descname">has_length</tt><big>(</big><em>v</em>, <em>min=None</em>, <em>max=None</em><big>)</big><a class="headerlink" href="#validatish.validate.has_length" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check that the length of the string or sequence is not less than an optional min value and not greater than an optional max value</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><em>max</em> &#8211; optional max value</li>
+<li><em>min</em> &#8211; optional min value</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="validatish.validate.is_in_range">
+<!--[validatish.validate.is_in_range]--><tt class="descclassname">validatish.validate.</tt><tt class="descname">is_in_range</tt><big>(</big><em>v</em>, <em>min=None</em>, <em>max=None</em><big>)</big><a class="headerlink" href="#validatish.validate.is_in_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check that the value is not less than an optional min value and not greater than an optional max value</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><em>max</em> &#8211; optional max value</li>
+<li><em>min</em> &#8211; optional min value</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<div class="section" id="id1">
+<h2>The Validate Module<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>Validators implements the following validator classes</p>
+<dl class="class">
+<dt id="validatish.validator.Required">
+<!--[validatish.validator.Required]-->class <tt class="descclassname">validatish.validator.</tt><tt class="descname">Required</tt><a class="headerlink" href="#validatish.validator.Required" title="Permalink to this definition">¶</a></dt>
+<dd>Checks that the value is not empty</dd></dl>
+
+<dl class="class">
+<dt id="validatish.validator.String">
+<!--[validatish.validator.String]-->class <tt class="descclassname">validatish.validator.</tt><tt class="descname">String</tt><a class="headerlink" href="#validatish.validator.String" title="Permalink to this definition">¶</a></dt>
+<dd>Checks whether value can be converted to an integer</dd></dl>
+
+<dl class="class">
+<dt id="validatish.validator.PlainText">
+<!--[validatish.validator.PlainText]-->class <tt class="descclassname">validatish.validator.</tt><tt class="descname">PlainText</tt><big>(</big><em>extra=''</em><big>)</big><a class="headerlink" href="#validatish.validator.PlainText" title="Permalink to this definition">¶</a></dt>
+<dd>Checks whether value is a &#8216;simple&#8217; string</dd></dl>
+
+<dl class="class">
+<dt id="validatish.validator.Email">
+<!--[validatish.validator.Email]-->class <tt class="descclassname">validatish.validator.</tt><tt class="descname">Email</tt><a class="headerlink" href="#validatish.validator.Email" title="Permalink to this definition">¶</a></dt>
+<dd>Checks whether value can be converted to a number and is not a string</dd></dl>
+
+<dl class="class">
+<dt id="validatish.validator.URL">
+<!--[validatish.validator.URL]-->class <tt class="descclassname">validatish.validator.</tt><tt class="descname">URL</tt><big>(</big><em>with_scheme=False</em><big>)</big><a class="headerlink" href="#validatish.validator.URL" title="Permalink to this definition">¶</a></dt>
+<dd>Checks whether value is a url</dd></dl>
+
+<dl class="class">
+<dt id="validatish.validator.Integer">
+<!--[validatish.validator.Integer]-->class <tt class="descclassname">validatish.validator.</tt><tt class="descname">Integer</tt><a class="headerlink" href="#validatish.validator.Integer" title="Permalink to this definition">¶</a></dt>
+<dd>Checks whether value can be converted to an integer</dd></dl>
+
+<dl class="class">
+<dt id="validatish.validator.Number">
+<!--[validatish.validator.Number]-->class <tt class="descclassname">validatish.validator.</tt><tt class="descname">Number</tt><a class="headerlink" href="#validatish.validator.Number" title="Permalink to this definition">¶</a></dt>
+<dd>Checks whether value can be converted to a number and is not a string</dd></dl>
+
+<dl class="class">
+<dt id="validatish.validator.Equal">
+<!--[validatish.validator.Equal]-->class <tt class="descclassname">validatish.validator.</tt><tt class="descname">Equal</tt><big>(</big><em>compared_to</em><big>)</big><a class="headerlink" href="#validatish.validator.Equal" title="Permalink to this definition">¶</a></dt>
+<dd>Validator that checks a value is equal to the comparison value, equal_to.</dd></dl>
+
+<dl class="class">
+<dt id="validatish.validator.OneOf">
+<!--[validatish.validator.OneOf]-->class <tt class="descclassname">validatish.validator.</tt><tt class="descname">OneOf</tt><big>(</big><em>set_of_values</em><big>)</big><a class="headerlink" href="#validatish.validator.OneOf" title="Permalink to this definition">¶</a></dt>
+<dd>Checks whether value is one of a supplied list of values</dd></dl>
+
+<dl class="class">
+<dt id="validatish.validator.Length">
+<!--[validatish.validator.Length]-->class <tt class="descclassname">validatish.validator.</tt><tt class="descname">Length</tt><big>(</big><em>min=None</em>, <em>max=None</em><big>)</big><a class="headerlink" href="#validatish.validator.Length" title="Permalink to this definition">¶</a></dt>
+<dd>Check whether the length of the value is not outside min/max bound(s)</dd></dl>
+
+<dl class="class">
+<dt id="validatish.validator.Range">
+<!--[validatish.validator.Range]-->class <tt class="descclassname">validatish.validator.</tt><tt class="descname">Range</tt><big>(</big><em>min=None</em>, <em>max=None</em><big>)</big><a class="headerlink" href="#validatish.validator.Range" title="Permalink to this definition">¶</a></dt>
+<dd>Check whether the value is not outside min/max bound(s)</dd></dl>
+
+<dl class="class">
+<dt id="validatish.validator.Any">
+<!--[validatish.validator.Any]-->class <tt class="descclassname">validatish.validator.</tt><tt class="descname">Any</tt><big>(</big><em>*args</em><big>)</big><a class="headerlink" href="#validatish.validator.Any" title="Permalink to this definition">¶</a></dt>
+<dd>Combines multiple validators together, raising an exception if any fail</dd></dl>
+
+<dl class="class">
+<dt id="validatish.validator.All">
+<!--[validatish.validator.All]-->class <tt class="descclassname">validatish.validator.</tt><tt class="descname">All</tt><big>(</big><em>*args</em><big>)</big><a class="headerlink" href="#validatish.validator.All" title="Permalink to this definition">¶</a></dt>
+<dd>Combines multiple validators together, raising an exception if they all fail</dd></dl>
+
+<dl class="class">
+<dt id="validatish.validator.Always">
+<!--[validatish.validator.Always]-->class <tt class="descclassname">validatish.validator.</tt><tt class="descname">Always</tt><a class="headerlink" href="#validatish.validator.Always" title="Permalink to this definition">¶</a></dt>
+<dd><p>A validator that always passes, mostly useful as a default.</p>
+<p>This validator tests False to make it seem &#8220;invisible&#8221; to discourage anyone
+bothering actually calling it.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="">About Validatish</a><ul>
+<li><a class="reference external" href="#how-does-validatish-work">How does Validatish work?</a></li>
+<li><a class="reference external" href="#the-validate-module">The Validate Module</a></li>
+<li><a class="reference external" href="#id1">The Validate Module</a></li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="index.html" title="previous chapter">Welcome to Validatish&#8217;s documentation!</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="_sources/introduction.txt">Show Source</a></li>
+            </ul>
+          <h3>Quick search</h3>
+            <form class="search" action="search.html" method="get">
+              <input type="text" name="q" size="18" /> <input type="submit" value="Go" />
+              <input type="hidden" name="check_keywords" value="yes" />
+              <input type="hidden" name="area" value="default" />
+            </form>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to Validatish&#8217;s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">Validatish v1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2008, Tim Parkin, Matt Goodall.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.5.
+    </div>
+  </body>
+</html>
