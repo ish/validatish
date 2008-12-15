@@ -13,6 +13,7 @@ _domain_user_regex = re.compile(r"^[^ \t\n\r@<>()]+$", re.I)
 
 
 def is_required(v):
+    """ Checks the non_zero attribute but allows numberic zero to pass """
     # XXX I still think it would be nicer if this just tested "is None". We did
     # discuss about the empty string "", but that's more of an input problem I
     # think, e.g. how does a higher layer interpret something that has not been
@@ -22,6 +23,7 @@ def is_required(v):
 
 
 def is_string(v):
+    """ checks that the value is an instance of basestring """
     if v is None:
         return
     msg = "must be a string"
@@ -30,9 +32,14 @@ def is_string(v):
 
 
 def is_plaintext(v,extra=''):
+    """
+    Checks that the value contains only alpha-numberics
+
+    :arg extra: A list of extra characters that are allowed
+    """
     if v is None:
         return
-    if not extra:
+    if extra:
         extra.replace('-','\-')
     regex = r"^[a-zA-Z0-9%s]*$"%extra
 
@@ -50,6 +57,7 @@ def is_plaintext(v,extra=''):
 
 
 def is_integer(v):
+    """ Checks that the value can be converted into an integer """
     if v is None:
         return
     msg = "must be an integer"
@@ -61,6 +69,7 @@ def is_integer(v):
 
 
 def is_number(v):
+    """ Checks that the value is not a string but can be converted to a float """
     if v is None:
         return
     msg = "must be a number"
@@ -103,6 +112,7 @@ def is_domain_name(value):
 
 
 def is_url(v,with_scheme=False):
+    """ Uses a simple regex from FormEncode to check for a url """
     if v is None:
         return
     msg = "must be a url"
@@ -132,6 +142,8 @@ def is_url(v,with_scheme=False):
 def is_equal(v, compared_to):
     """
     Check the value, v, is equal to the comparison value.
+
+    :arg compared_to: the value to compare to
     """
     if v is None or v == compared_to:
         return
@@ -139,6 +151,11 @@ def is_equal(v, compared_to):
 
 
 def is_one_of(v, set_of_values):
+    """
+    Check that the value is one of the set of values given
+
+    :arg set_of_values: the set of values to check against
+    """
     if v is None:
         return
     if not set_of_values:
@@ -152,6 +169,12 @@ def is_one_of(v, set_of_values):
 
 
 def has_length(v, min=None, max=None):
+    """
+    Check that the length of the string or sequence is not less than an optional min value and not greater than an optional max value
+
+    :arg max: optional max value
+    :arg min: optional min value
+    """
     if v is None:
         return
     if min is None and max is None:
@@ -167,6 +190,13 @@ def has_length(v, min=None, max=None):
 
 
 def is_in_range(v, min=None, max=None):
+    """
+    Check that the value is not less than an optional min value and not greater than an optional max value
+
+    :arg max: optional max value
+    :arg min: optional min value
+    """
+
     if min is None and max is None:
         return
     if min is not None and max is not None:
