@@ -7,6 +7,11 @@ import re
 from validatish.error import Invalid
 
 
+# Various compiled regexs used in validation functions.
+_domain_name_regex = re.compile(r"^[a-z0-9][a-z0-9\.\-_]*\.[a-z]+$", re.I)
+_domain_user_regex = re.compile(r"^[^ \t\n\r@<>()]+$", re.I)
+
+
 def is_required(v):
     # XXX I still think it would be nicer if this just tested "is None". We did
     # discuss about the empty string "", but that's more of an input problem I
@@ -68,21 +73,33 @@ def is_number(v):
 
 
 def is_email(v):
+    """
+    Validate the value looks like an email address.
+    """
     if v is None:
         return
-    msg = "must be an email"
-    if not isinstance(v,basestring):
-        raise Invalid(msg)
-    usernameRE = re.compile(r"^[^ \t\n\r@<>()]+$", re.I)
-    addressRE = re.compile(r"^[a-z0-9][a-z0-9\.\-_]*\.[a-z]+$", re.I)
+    if not isinstance(v ,basestring):
+        raise Invalid("must be a string")
     parts = v.split('@')
     if len(parts) !=2:
-        raise Invalid('must have only one @')
+        raise Invalid('must contain one @')
     username, address = parts
-    if not usernameRE.search(username):
+    if _domain_user_regex.match(username) is None:
         raise Invalid('username part before the @ is incorrect')
-    if not addressRE.search(address):
-        raise Invalid('address part after the @ is incorrect')
+    if _domain_name_regex.match(address) is None:
+        raise Invalid('domain name part after the @ is incorrect')
+
+
+def is_domain_name(value):
+    """
+    Validate the value looks like a domain name.
+    """
+    if value is None:
+        return
+    if not isinstance(value, basestring):
+        raise Invalid('must be a string')
+    if _domain_name_regex.match(value) is None:
+        raise Invalid('is invalid')
 
 
 def is_url(v,with_scheme=False):

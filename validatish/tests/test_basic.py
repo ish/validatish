@@ -186,7 +186,6 @@ class TestPlainText(unittest.TestCase):
         check_fail('class', self, self.class_fn_extra_hyphen, values)
 
 
-
 class TestEmail(unittest.TestCase):
 
     type='Email'
@@ -217,6 +216,38 @@ class TestEmail(unittest.TestCase):
             ]
         check_fail('function', self, self.fn, values)
         check_fail('class', self, self.class_fn, values)
+
+
+class TestDomainName(unittest.TestCase):
+
+    type='DomainName'
+    fn = staticmethod(validate.is_domain_name)
+    class_fn = validator.DomainName()
+
+    def test_validate_pass(self):
+        self.section='pass'
+        values = [
+            't.p',
+            'timparkin.co.uk',
+            None,
+            ]
+        check_pass('function',self, self.fn, values)
+        check_pass('class', self, self.class_fn, values)
+
+    def test_validate_fail(self):
+        self.section='fail'
+        values = [
+            1,
+            1.01,
+            ['a','b','c'],
+            ['a'],
+            'derekcom',
+            'tim@eliot',
+            'info@tim@parkin.co.uk',
+            ]
+        check_fail('function', self, self.fn, values)
+        check_fail('class', self, self.class_fn, values)
+
 
 class TestURL(unittest.TestCase):
 

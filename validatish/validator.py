@@ -47,10 +47,17 @@ class PlainText(Validator):
 
 
 class Email(Validator):
-    """ Checks whether value can be converted to a number and is not a string  """
+    """ Checks whether value looks like an email address.  """
 
     def __call__(self, v):
         validate.is_email(v)
+
+
+class DomainName(Validator):
+    """ Checks whether value looks like a domain name.  """
+
+    def __call__(self, v):
+        validate.is_domain_name(v)
 
 
 class URL(Validator):
