@@ -20,8 +20,19 @@
     <link rel="search" title="Search" href="search.html" />
     <link rel="top" title="Validatish v1 documentation" href="index.html" />
     <link rel="prev" title="Welcome to Validatish&#8217;s documentation!" href="index.html" /> 
+
+
+  <link media="screen" href="_static/css/screen.css" type="text/css" rel="stylesheet" />
+  <link media="screen" href="_static/css/images.css" type="text/css" rel="stylesheet" />
+  <link media="screen" href="_static/css/sIFR-screen.css" type="text/css" rel="stylesheet" />
+  <link media="print" href="_static/css/sIFR-print.css" type="text/css" rel="stylesheet" />  
+  <script type="text/javascript" src="_static/js/sifr.js" ></script>
+  <script type="text/javascript" src="_static/js/sifr-config.js" ></script> 
+  <script type="text/javascript" src="_static/js/sifr-debug.js" ></script> 
+
   </head>
-  <body>
+  <body id="sphinx">
+    <div id="wrapper">
     <div class="related">
       <h3>Navigation</h3>
       <ul>
@@ -34,7 +45,13 @@
         <li><a href="index.html">Validatish v1 documentation</a> &raquo;</li> 
       </ul>
     </div>  
-    <div class="document">
+
+    <div id="header">
+      <div id="logo"><img src="_static/images/logo/ish.io.png" /></div>
+    </div>
+
+<div id="main">
+    <div  class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body">
@@ -90,7 +107,7 @@
 <dl class="function">
 <dt id="validatish.validate.is_email">
 <!--[validatish.validate.is_email]--><tt class="descclassname">validatish.validate.</tt><tt class="descname">is_email</tt><big>(</big><em>v</em><big>)</big><a class="headerlink" href="#validatish.validate.is_email" title="Permalink to this definition">¶</a></dt>
-<dd>Uses a simple regex from FormEncode to check for an email</dd></dl>
+<dd>Validate the value looks like an email address.</dd></dl>
 
 <dl class="function">
 <dt id="validatish.validate.is_url">
@@ -189,7 +206,7 @@
 <dl class="class">
 <dt id="validatish.validator.Email">
 <!--[validatish.validator.Email]-->class <tt class="descclassname">validatish.validator.</tt><tt class="descname">Email</tt><a class="headerlink" href="#validatish.validator.Email" title="Permalink to this definition">¶</a></dt>
-<dd>Checks whether value can be converted to a number and is not a string</dd></dl>
+<dd>Checks whether value looks like an email address.</dd></dl>
 
 <dl class="class">
 <dt id="validatish.validator.URL">
@@ -293,7 +310,8 @@ bothering actually calling it.</p>
     </div>
     <div class="footer">
       &copy; Copyright 2008, Tim Parkin, Matt Goodall.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.5.
     </div>
+  </div> 
+  </div>
   </body>
 </html>
