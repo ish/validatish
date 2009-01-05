@@ -1,6 +1,6 @@
 Metadata-Version: 1.0
 Name: validatish
-Version: 0.5dev
+Version: 0.5
 Summary: Validatish is a minimal library of validators that can be used in functional and class generated forms.
 Home-page: http://ish.io/projects/show/validatish
 Author: Tim Parkin, Matt Goodall
@@ -13,7 +13,8 @@ Platform: UNKNOWN
 Classifier: Development Status :: 4 - Beta
 Classifier: Intended Audience :: Developers
 Classifier: License :: OSI Approved :: BSD License
-Classifier: Environment :: Web EnvironmentOperating System :: OS Independent
+Classifier: Environment :: Web Environment
+Classifier: Operating System :: OS Independent
 Classifier: Programming Language :: Python :: 2
 Classifier: Topic :: Internet :: WWW/HTTP :: Dynamic Content
 Classifier: Topic :: Software Development :: Libraries :: Python Modules

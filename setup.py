@@ -13,11 +13,11 @@ Validatish is a simple validation library designed to be a good building block f
           "Development Status :: 4 - Beta",
           "Intended Audience :: Developers",
           "License :: OSI Approved :: BSD License",
-          "Environment :: Web Environment"
+          "Environment :: Web Environment",
           "Operating System :: OS Independent",
           "Programming Language :: Python :: 2",
           "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
-          "Topic :: Software Development :: Libraries :: Python Modules"
+          "Topic :: Software Development :: Libraries :: Python Modules",
       ], 
       keywords='validation,schema,forms,form library,form',
       author='Tim Parkin, Matt Goodall',
