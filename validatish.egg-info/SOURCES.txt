@@ -1,6 +1,12 @@
 .gitignore
+AUTHORS
+CHANGELOG
+FAQ
+INSTALL
+LICENSE
+NEWS
+README
 TODO
-setup.cfg
 setup.py
 docs-build/Makefile
 docs-build/conf.py
