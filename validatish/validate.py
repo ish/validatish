@@ -204,7 +204,7 @@ def is_in_range(v, min=None, max=None):
     elif min is not None:
         error = "must be greater than %s"%(min)
     else:
-        error = "must be less than %s"%(min)
+        error = "must be less than %s"%(max)
         
     if max is not None and v > max:
         raise Invalid(error)
