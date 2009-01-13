@@ -8,6 +8,8 @@ setup(name='validatish',
       description="Validatish is a minimal library of validators that can be used in functional and class generated forms.",
       long_description="""\
 Validatish is a simple validation library designed to be a good building block for validation structures. It implements some basic validators in functional form (i.e. simple function calls) or in class form (i.e. instantiate a class and then just call the validate method).
+
+      Changlog at `http://github.com/ish/validatish/raw/master/CHANGELOG <http://github.com/ish/validatish/raw/master/CHANGELOG>`_
 """,
       classifiers=[
           "Development Status :: 4 - Beta",
