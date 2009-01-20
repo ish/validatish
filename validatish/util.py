@@ -4,6 +4,11 @@ Module of validatish utils.
 
 from validatish.validator import All, Any
 
+def any(iterable):
+    return False in (not x for x in iterable)
+
+def all(iterable):
+    return True not in (not x for x in iterable)
 
 def validation_includes(validator, validator_type):
     """
