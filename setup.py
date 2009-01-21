@@ -1,11 +1,11 @@
 from setuptools import setup, find_packages
 import sys, os
 
-version = '0.5.1'
+version = '0.5.2'
 
 setup(name='validatish',
       version=version,
-      description="Validatish is a minimal library of validators that can be used in functional and class generated forms.",
+      description="Validatish is a minimal library of validators that can validate in a functional or class instantiated style.",
       long_description="""\
 Validatish is a simple validation library designed to be a good building block for validation structures. It implements some basic validators in functional form (i.e. simple function calls) or in class form (i.e. instantiate a class and then just call the validate method).
 
@@ -21,7 +21,7 @@ Validatish is a simple validation library designed to be a good building block f
           "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
           "Topic :: Software Development :: Libraries :: Python Modules",
       ], 
-      keywords='validation,schema,forms,form library,form',
+      keywords='validation schema forms form library form validate validator',
       author='Tim Parkin, Matt Goodall',
       author_email='developers@ish.io',
       url='http://ish.io/projects/show/validatish',

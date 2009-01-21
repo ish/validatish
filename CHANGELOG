@@ -2,6 +2,11 @@
 Changlelog
 ==========
 
+0.5.2 (2009-01-21)
+------------------
+
+BUGFIX: plain text validator was not handling unicode correctly and produced incorrect error messages when no extra characters were passed
+
 0.5.1 (2009-01-06)
 ------------------
 
