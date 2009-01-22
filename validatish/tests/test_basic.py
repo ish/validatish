@@ -744,6 +744,28 @@ class TestAny_IntegerString(unittest.TestCase):
             assert 'integer' in ''.join(e.errors)
 
 
+class TestAny_RangeInteger(unittest.TestCase):
+
+    type='AnyRangeInteger'
+    fn = validator.Any(validator.Range(min=8), validator.Integer())
+
+    def test_validate_pass(self):
+        self.section='pass'
+        values = [
+            4,
+            12.3,
+            15,
+            None,
+            ]
+        check_pass('class', self, self.fn, values)
+
+    def test_validate_fail(self):
+        self.section='fail'
+        values = [
+            3.4,
+        ]
+        check_fail('class', self, self.fn, values)
+
 
 class Test_RequiredAndIntegerOrString(unittest.TestCase):
 

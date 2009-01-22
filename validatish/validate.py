@@ -31,7 +31,7 @@ def is_string(v):
         raise Invalid(msg)
 
 
-def is_plaintext(v,extra=''):
+def is_plaintext(v,extra=None):
     """
     Checks that the value contains only alpha-numberics
 
@@ -51,7 +51,7 @@ def is_plaintext(v,extra=''):
     if extra is not None:
         msg = "must consist of characters and numbers plus any of %s"%extra
 
-    p = re.compile(regex)
+    p = re.compile(regex, re.UNICODE)
     if not p.match(v):
         raise Invalid(msg)
 
