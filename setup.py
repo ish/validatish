@@ -21,7 +21,7 @@ Validatish is a simple validation library designed to be a good building block f
           "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
           "Topic :: Software Development :: Libraries :: Python Modules",
       ], 
-      keywords='validation schema forms form library form validate validator',
+      keywords='validation schema forms form library form validate validator check checker',
       author='Tim Parkin, Matt Goodall',
       author_email='developers@ish.io',
       url='http://ish.io/projects/show/validatish',
