@@ -139,7 +139,8 @@ class Any(CompoundValidator):
                 exceptions.append(e)
             else:
                 return
-        raise error.Invalid("is not valid", exceptions)
+        message = '; '.join(e.message for e in exceptions)
+        raise error.Invalid("Please fix any of: %s"%message, exceptions)
 
 
 class All(CompoundValidator):
@@ -157,7 +158,8 @@ class All(CompoundValidator):
                 exceptions.append(e)
 
         if len(exceptions):
-            raise error.Invalid("is not valid", exceptions)
+            message = '; '.join(e.message for e in exceptions)
+            raise error.Invalid(message, exceptions)
 
 
 class Always(Validator):
