@@ -125,7 +125,10 @@ class Range(Validator):
 
 
 class Any(CompoundValidator):
-    """ Combines multiple validators together, raising an exception if any fail """
+    """
+    Combines multiple validators together, raising an exception only if they
+    all fail (i.e. validation succeeds if any validator passes).
+    """
 
     def __init__(self, *args):
         self.validators=args
@@ -144,7 +147,7 @@ class Any(CompoundValidator):
 
 
 class All(CompoundValidator):
-    """ Combines multiple validators together, raising an exception if they all fail """
+    """ Combines multiple validators together, raising an exception unless they all pass """
 
     def __init__(self, *args):
         self.validators = args
