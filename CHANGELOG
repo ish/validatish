@@ -2,7 +2,7 @@
 Changlelog
 ==========
 
-0.5.3 (2009-01-21)
+0.5.4 (2009-01-21)
 ------------------
 
  * Added a short term fix to make the error messages bubble up in Any and All validators.
