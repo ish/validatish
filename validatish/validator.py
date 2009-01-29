@@ -1,4 +1,5 @@
-from validatish import error, validate
+from validatish import validate
+from error import Invalid
 
 
 #####
@@ -11,6 +12,9 @@ class Validator(object):
 
     def __call__(self, value):
         """ A method that will raise an Invalid error """
+
+    def __repr__(self):
+        return 'validatish.%s()'%self.__class__.__name__
 
 
 class CompoundValidator(Validator):
@@ -28,14 +32,21 @@ class Required(Validator):
     """
 
     def __call__(self, v):
-        validate.is_required(v)
+        try:
+            validate.is_required(v)
+        except Invalid, e:
+            raise Invalid(e.message, validator=self)
+
 
 
 class String(Validator):
     """ Checks whether value can be converted to an integer  """
 
     def __call__(self, v):
-        validate.is_string(v)
+        try:
+            validate.is_string(v)
+        except Invalid, e:
+            raise Invalid(e.message, validator=self)
 
 
 class PlainText(Validator):
@@ -43,21 +54,30 @@ class PlainText(Validator):
     def __init__(self, extra=''):
         self.extra = extra
     def __call__(self, v):
-        validate.is_plaintext(v,extra=self.extra)
+        try:
+            validate.is_plaintext(v,extra=self.extra)
+        except Invalid, e:
+            raise Invalid(e.message, validator=self)
 
 
 class Email(Validator):
     """ Checks whether value looks like an email address.  """
 
     def __call__(self, v):
-        validate.is_email(v)
+        try:
+            validate.is_email(v)
+        except Invalid, e:
+            raise Invalid(e.message, validator=self)
 
 
 class DomainName(Validator):
     """ Checks whether value looks like a domain name.  """
 
     def __call__(self, v):
-        validate.is_domain_name(v)
+        try:
+            validate.is_domain_name(v)
+        except Invalid, e:
+            raise Invalid(e.message, validator=self)
 
 
 class URL(Validator):
@@ -66,21 +86,33 @@ class URL(Validator):
         self.with_scheme = with_scheme
 
     def __call__(self, v):
-        validate.is_url(v, with_scheme=self.with_scheme)
+        try:
+            validate.is_url(v, with_scheme=self.with_scheme)
+        except Invalid, e:
+            raise Invalid(e.message, validator=self)
+
+    def __repr__(self):
+        return 'validatish.%s(with_schema=%s)'%(self.__class__.__name__, self.with_scheme)
 
 
 class Integer(Validator):
     """ Checks whether value can be converted to an integer  """
 
     def __call__(self, v):
-        validate.is_integer(v)
+        try:
+            validate.is_integer(v)
+        except Invalid, e:
+            raise Invalid(e.message, validator=self)
 
 
 class Number(Validator):
     """ Checks whether value can be converted to a number and is not a string  """
 
     def __call__(self, v):
-        validate.is_number(v)
+        try:
+            validate.is_number(v)
+        except Invalid, e:
+            raise Invalid(e.message, validator=self)
 
 
 class Equal(Validator):
@@ -89,8 +121,15 @@ class Equal(Validator):
     """
     def __init__(self, compared_to):
         self.compared_to = compared_to
+
     def __call__(self, v):
-        validate.is_equal(v, self.compared_to)
+        try:
+            validate.is_equal(v, self.compared_to)
+        except Invalid, e:
+            raise Invalid(e.message, validator=self)
+
+    def __repr__(self):
+        return 'validatish.%s(%s)'%(self.__class__.__name__, self.compared_to)
 
 
 class OneOf(Validator):
@@ -99,7 +138,13 @@ class OneOf(Validator):
         self.set_of_values = set_of_values
 
     def __call__(self, v):
-        validate.is_one_of(v, self.set_of_values)
+        try:
+            validate.is_one_of(v, self.set_of_values)
+        except Invalid, e:
+            raise Invalid(e.message, validator=self)
+
+    def __repr__(self):
+        return 'validatish.%s(%s)'%(self.__class__.__name__, self.set_of_values)
 
 
 class Length(Validator):
@@ -110,7 +155,13 @@ class Length(Validator):
         self.min = min
 
     def __call__(self, v):
-        validate.has_length(v, min=self.min, max=self.max)
+        try:
+            validate.has_length(v, min=self.min, max=self.max)
+        except Invalid, e:
+            raise Invalid(e.message, validator=self)
+
+    def __repr__(self):
+        return 'validatish.%s(min=%s, max=%s)'%(self.__class__.__name__, self.min, self.max)
 
 
 class Range(Validator):
@@ -121,7 +172,13 @@ class Range(Validator):
         self.min = min
 
     def __call__(self, v):
-        validate.is_in_range(v, min=self.min, max=self.max)
+        try:
+            validate.is_in_range(v, min=self.min, max=self.max)
+        except Invalid, e:
+            raise Invalid(e.message, validator=self)
+
+    def __repr__(self):
+        return 'validatish.%s(min=%s, max=%s)'%(self.__class__.__name__, self.min, self.max)
 
 
 class Any(CompoundValidator):
@@ -138,12 +195,15 @@ class Any(CompoundValidator):
         for validator in self.validators:
             try:
                 validator(v)
-            except error.Invalid, e :
-                exceptions.append(e)
+            except Invalid, e :
+                exceptions.append(Invalid(e.message, e.exceptions, validator))
             else:
                 return
         message = '; '.join(e.message for e in exceptions)
-        raise error.Invalid("Please fix any of: %s"%message, exceptions)
+        raise Invalid("Please fix any of: %s"%message, exceptions, self)
+
+    def __repr__(self):
+        return 'validatish.%s%s'%(self.__class__.__name__, self.validators)
 
 
 class All(CompoundValidator):
@@ -157,12 +217,15 @@ class All(CompoundValidator):
         for validator in self.validators:
             try:
                 validator(v)
-            except error.Invalid, e:
-                exceptions.append(e)
+            except Invalid, e:
+                exceptions.append(Invalid(e.message, e.exceptions, validator))
 
         if len(exceptions):
             message = '; '.join(e.message for e in exceptions)
-            raise error.Invalid(message, exceptions)
+            raise Invalid(message, exceptions, self)
+
+    def __repr__(self):
+        return 'validatish.%s%s'%(self.__class__.__name__, self.validators)
 
 
 class Always(Validator):
