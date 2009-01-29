@@ -5,14 +5,22 @@ Module containing package exception classes.
 
 class Invalid(Exception):
 
-    def __init__(self, message, exceptions=None):
+    def __init__(self, message, exceptions=None, validator=None):
         Exception.__init__(self, message, exceptions)
         self.message = message
         self.exceptions = exceptions
+        self.validator = validator
 
     def __str__(self):
         return self.message
     __unicode__ = __str__
+
+    def __repr__(self):
+        if self.exceptions:
+            return 'validatish.Invalid("%s", exceptions=%s, validator=%s)' % (self.message, self.exceptions, self.validator)
+        else:
+            return 'validatish.Invalid("%s", validator=%s)' % (self.message, self.validator)
+            
 
     @property
     def errors(self):

@@ -12,6 +12,7 @@ docs-build/Makefile
 docs-build/conf.py
 docs-build/index.rst
 docs-build/introduction.rst
+docs-build/run
 docs-build/.static/.gitignore
 docs-build/.static/css/clearfix.css
 docs-build/.static/css/flash.css

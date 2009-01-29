@@ -1,6 +1,12 @@
-========== 
+==========
 Changlelog
 ==========
+
+0.6 (2009-01-29)
+----------------
+
+ * Added better reprs
+ * Attached the original validator to the exception to allow developers to customise the error messages
 
 0.5.4 (2009-01-21)
 ------------------
