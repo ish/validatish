@@ -35,4 +35,5 @@ setup(name='validatish',
       entry_points="""
       # -*- Entry points: -*-
       """,
+      test_suite='validatish.tests',
       )
