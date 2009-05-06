@@ -20,7 +20,6 @@ class Invalid(Exception):
             return 'validatish.Invalid("%s", exceptions=%s, validator=%s)' % (self.message, self.exceptions, self.validator)
         else:
             return 'validatish.Invalid("%s", validator=%s)' % (self.message, self.validator)
-            
 
     @property
     def errors(self):
@@ -32,6 +31,11 @@ class Invalid(Exception):
         else:
             for e in self.exceptions:
                 yield e._fetch_errors()
+
+    # Hide Python 2.6 deprecation warning.
+    def _get_message(self): return self._message
+    def _set_message(self, message): self._message = message
+    message = property(_get_message, _set_message)
 
 
 def _flatten(s, toiter=iter):
