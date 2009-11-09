@@ -2,6 +2,11 @@
 Changlelog
 ==========
 
+0.6.1 (2009-11-09)
+------------------
+
+ * Fixed error in length validator message
+
 0.6 (2009-01-29)
 ----------------
 
