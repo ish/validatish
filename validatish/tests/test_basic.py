@@ -566,7 +566,7 @@ class TestLength(unittest.TestCase):
         try:
             self.fn_max('aaaaaaaaaa')
         except error.Invalid, e:
-            assert 'less' in e.message
+            assert 'fewer' in e.message
 
     def test_noattrs(self):
         try:

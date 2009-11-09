@@ -180,13 +180,15 @@ def has_length(v, min=None, max=None):
     if min is None and max is None:
         return
     if isinstance(v,basestring):
-        error = "must have %s than %s characters"
+        unit = 'characters'
     else:
-        error = "must have %s than %s items"
+        unit = 'items'
+    if max is not None and min is not None and (len(v) > max or len(v) < min):
+        raise Invalid('must have between %s and %s %s'%(min, max, unit))
     if max is not None and len(v) > max:
-        raise Invalid(error%("less",max))
+        raise Invalid('must have %s or fewer %s'%(max, unit))
     if min is not None and len(v) < min:
-        raise Invalid(error%("more",min))
+        raise Invalid('must have %s or more %s'%(min, unit))
 
 
 def is_in_range(v, min=None, max=None):
@@ -202,9 +204,9 @@ def is_in_range(v, min=None, max=None):
     if min is not None and max is not None:
         error = "must be between %s and %s"%(min,max)
     elif min is not None:
-        error = "must be greater than %s"%(min)
+        error = "must be greater than or equal to %s"%(min)
     else:
-        error = "must be less than %s"%(max)
+        error = "must be less than or equal to %s"%(max)
         
     if max is not None and v > max:
         raise Invalid(error)
