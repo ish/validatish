@@ -2,6 +2,11 @@
 Changlelog
 ==========
 
+0.6.2 (2010-01-18)
+------------------
+
+ * Added a custom messages keyword argument to allow them to be overridden
+
 0.6.1 (2009-11-09)
 ------------------
 
