@@ -31,9 +31,12 @@ class Required(Validator):
     """ Checks that the value is not empty
     """
 
+    def __init__(self, messages=None):
+        self.messages = messages
+
     def __call__(self, v):
         try:
-            validate.is_required(v)
+            validate.is_required(v, messages=self.messages)
         except Invalid, e:
             raise Invalid(e.message, validator=self)
 
@@ -41,6 +44,9 @@ class Required(Validator):
 
 class String(Validator):
     """ Checks whether value can be converted to an integer  """
+
+    def __init__(self, messages=None):
+        self.messages = messages
 
     def __call__(self, v):
         try:
@@ -51,11 +57,14 @@ class String(Validator):
 
 class PlainText(Validator):
     """ Checks whether value is a 'simple' string"""
-    def __init__(self, extra=''):
+
+    def __init__(self, extra='', messages=None):
         self.extra = extra
+        self.messages = messages
+
     def __call__(self, v):
         try:
-            validate.is_plaintext(v,extra=self.extra)
+            validate.is_plaintext(v,extra=self.extra, messages=self.messages)
         except Invalid, e:
             raise Invalid(e.message, validator=self)
 
@@ -63,9 +72,12 @@ class PlainText(Validator):
 class Email(Validator):
     """ Checks whether value looks like an email address.  """
 
+    def __init__(self, messages=None):
+        self.messages = messages
+
     def __call__(self, v):
         try:
-            validate.is_email(v)
+            validate.is_email(v, messages=self.messages)
         except Invalid, e:
             raise Invalid(e.message, validator=self)
 
@@ -73,21 +85,26 @@ class Email(Validator):
 class DomainName(Validator):
     """ Checks whether value looks like a domain name.  """
 
+    def __init__(self, messages=None):
+        self.messages = messages
+
     def __call__(self, v):
         try:
-            validate.is_domain_name(v)
+            validate.is_domain_name(v, messages=self.messages)
         except Invalid, e:
             raise Invalid(e.message, validator=self)
 
 
 class URL(Validator):
     """ Checks whether value is a url"""
-    def __init__(self, with_scheme=False):
+
+    def __init__(self, with_scheme=False, messages=None):
         self.with_scheme = with_scheme
+        self.messages = messages
 
     def __call__(self, v):
         try:
-            validate.is_url(v, with_scheme=self.with_scheme)
+            validate.is_url(v, with_scheme=self.with_scheme, messages=self.messages)
         except Invalid, e:
             raise Invalid(e.message, validator=self)
 
@@ -98,9 +115,12 @@ class URL(Validator):
 class Integer(Validator):
     """ Checks whether value can be converted to an integer  """
 
+    def __init__(self, messages=None):
+        self.messages = messages
+
     def __call__(self, v):
         try:
-            validate.is_integer(v)
+            validate.is_integer(v, messages=self.messages)
         except Invalid, e:
             raise Invalid(e.message, validator=self)
 
@@ -108,9 +128,12 @@ class Integer(Validator):
 class Number(Validator):
     """ Checks whether value can be converted to a number and is not a string  """
 
+    def __init__(self, messages=None):
+        self.messages = messages
+
     def __call__(self, v):
         try:
-            validate.is_number(v)
+            validate.is_number(v, messages=self.messages)
         except Invalid, e:
             raise Invalid(e.message, validator=self)
 
@@ -119,12 +142,13 @@ class Equal(Validator):
     """
     Validator that checks a value is equal to the comparison value, equal_to.
     """
-    def __init__(self, compared_to):
+    def __init__(self, compared_to, messages=None):
         self.compared_to = compared_to
+        self.messages = messages
 
     def __call__(self, v):
         try:
-            validate.is_equal(v, self.compared_to)
+            validate.is_equal(v, self.compared_to, messages=self.messages)
         except Invalid, e:
             raise Invalid(e.message, validator=self)
 
@@ -134,12 +158,14 @@ class Equal(Validator):
 
 class OneOf(Validator):
     """ Checks whether value is one of a supplied list of values"""
-    def __init__(self, set_of_values):
+
+    def __init__(self, set_of_values, messages=None):
         self.set_of_values = set_of_values
+        self.messages=messages
 
     def __call__(self, v):
         try:
-            validate.is_one_of(v, self.set_of_values)
+            validate.is_one_of(v, self.set_of_values, messages=self.messages)
         except Invalid, e:
             raise Invalid(e.message, validator=self)
 
@@ -150,13 +176,14 @@ class OneOf(Validator):
 class Length(Validator):
     """ Check whether the length of the value is not outside min/max bound(s) """
 
-    def __init__(self, min=None, max=None):
+    def __init__(self, min=None, max=None, messages=None):
         self.max = max
         self.min = min
+        self.messages = messages
 
     def __call__(self, v):
         try:
-            validate.has_length(v, min=self.min, max=self.max)
+            validate.has_length(v, min=self.min, max=self.max, messages=self.messages)
         except Invalid, e:
             raise Invalid(e.message, validator=self)
 
@@ -167,13 +194,14 @@ class Length(Validator):
 class Range(Validator):
     """ Check whether the value is not outside min/max bound(s) """
 
-    def __init__(self, min=None, max=None):
+    def __init__(self, min=None, max=None, messages=None):
         self.max = max
         self.min = min
+        self.messages = messages
 
     def __call__(self, v):
         try:
-            validate.is_in_range(v, min=self.min, max=self.max)
+            validate.is_in_range(v, min=self.min, max=self.max, messages=self.messages)
         except Invalid, e:
             raise Invalid(e.message, validator=self)
 
@@ -187,8 +215,9 @@ class Any(CompoundValidator):
     all fail (i.e. validation succeeds if any validator passes).
     """
 
-    def __init__(self, *args):
+    def __init__(self, *args, **kw):
         self.validators=args
+        self.messages = kw.get('messages')
 
     def __call__(self, v):
         exceptions = []
@@ -200,7 +229,12 @@ class Any(CompoundValidator):
             else:
                 return
         message = '; '.join(e.message for e in exceptions)
-        raise Invalid("Please fix any of: %s"%message, exceptions, self)
+        _messages = {
+            'please-fix': "Please fix any of: %(errors)s",
+        }
+        if self.messages:
+            _messages.update(messages)
+        raise Invalid(_messages['please-fix']%{'errors':message}, exceptions, self)
 
     def __repr__(self):
         return 'validatish.%s%s'%(self.__class__.__name__, self.validators)
