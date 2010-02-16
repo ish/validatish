@@ -1,6 +1,6 @@
 Metadata-Version: 1.0
 Name: validatish
-Version: 0.6.3
+Version: 0.6.4
 Summary: Validatish is a minimal library of validators that can validate in a functional or class instantiated style.
 Home-page: http://validat.ish.io
 Author: Tim Parkin, Matt Goodall
