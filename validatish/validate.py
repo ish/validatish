@@ -12,7 +12,7 @@ _domain_name_regex = re.compile(r"^[a-z0-9][a-z0-9\.\-_]*\.[a-z]+$", re.I)
 _domain_user_regex = re.compile(r"^[^ \t\n\r@<>()]+$", re.I)
 
 
-def is_required(v,messages=None):
+def is_required(v,messages=None, none_zero=False):
     """ Checks the non_zero attribute but allows numberic zero to pass """
     # XXX I still think it would be nicer if this just tested "is None". We did
     # discuss about the empty string "", but that's more of an input problem I
@@ -23,8 +23,13 @@ def is_required(v,messages=None):
     }
     if messages:
         _messages.update(messages)
-    if not v and v != 0:
-        raise Invalid(_messages['required'])
+
+    if none_zero:
+        if not v:
+            raise Invalid(_messages['required'])
+    else:
+        if v is None:
+            raise Invalid(_messages['required'])
 
 
 def is_string(v, messages=None):
