@@ -269,10 +269,12 @@ def is_in_range(v, min=None, max=None, messages=None):
     if min is None and max is None:
         return
     _messages = {
-        'between': "must have between %(min)s and %(max)s",
+        'between': "must be between %(min)s and %(max)s",
         'greater-than': "must be greater than or equal to %(min)s",
         'less-than': "must be less than or equal to %(max)s",
     }
+    if messages:
+        _messages.update(messages)
     if min is not None and max is not None:
         error = _messages['between']%{'min':min,'max':max}
     elif min is not None:
