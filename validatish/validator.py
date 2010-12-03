@@ -97,8 +97,6 @@ class DomainName(Validator):
 
 class URL(Validator):
     """ Checks whether value is a url"""
-    def is_url(v, full=True, absolute=True, relative=True, with_scheme=False, messages=None):
-
     def __init__(self, full=True, absolute=True, relative=True, with_scheme=False, messages=None)
         self.full = full
         self.absolute = absolute
