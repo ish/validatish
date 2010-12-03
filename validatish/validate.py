@@ -154,34 +154,27 @@ def is_domain_name(value, messages=None):
         raise Invalid(_messages['invalid'])
 
 
-def is_url(v, with_scheme=False, messages=None):
+def is_url(v, full=True, absolute=True, relative=True, with_scheme=False, messages=None):
     """ Uses a simple regex from FormEncode to check for a url """
-    if v is None:
-        return
-    _messages = {
-        'type-url': "must be a url",
-    }
+    _messages = { 'type-url': "must be a url" }
     if messages:
         _messages.update(messages)
+
+    if v is None:
+        return
     if not isinstance(v,basestring):
         raise Invalid(_messages['type-url'])
 
-    urlRE = re.compile(r'^(http|https)://'
-           r'(?:[a-z0-9\-]+|[a-z0-9][a-z0-9\-\.\_]*\.[a-z]+)'
-           r'(?::[0-9]+)?'
-           r'(?:/.*)?$', re.I) 
-    schemeRE = re.compile(r'^[a-zA-Z]+:')
-    # Check the scheme matches
-    if not with_scheme:
-        if not schemeRE.search(v):
-            # If we don't have a sceme, add one
-            v = 'http://' + v
-    # Now get the scheme part back out
-    match = schemeRE.search(v)
-    if match is None:
-        raise Invalid(_messages['type-url'])
-    # and use it to help extract the domain part
-    v = match.group(0).lower() + v[len(match.group(0)):]
+    exp = []
+    if full:
+        exp.append(r"(https?://)([a-z0-9][a-z0-9\-\.\_]*\.[a-z]+)(:[0-9]+)?(/.*)?")
+    if absolute and not with_scheme:
+        exp.append('/.*')
+    if relative and not with_scheme:
+        exp.append('[^/(https?://)].*')
+
+    urlRE = re.compile('^('+')$|^('.join(exp)+')$', re.I)
+
     if not urlRE.search(v):
         raise Invalid(_messages['type-url'])
 

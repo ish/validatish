@@ -97,14 +97,20 @@ class DomainName(Validator):
 
 class URL(Validator):
     """ Checks whether value is a url"""
+    def is_url(v, full=True, absolute=True, relative=True, with_scheme=False, messages=None):
 
-    def __init__(self, with_scheme=False, messages=None):
-        self.with_scheme = with_scheme
+    def __init__(self, full=True, absolute=True, relative=True, with_scheme=False, messages=None)
+        self.full = full
+        self.absolute = absolute
+        self.relative = relative
+        if with_schema:
+            self.absolute = False
+            self.relative = False
         self.messages = messages
 
     def __call__(self, v):
         try:
-            validate.is_url(v, with_scheme=self.with_scheme, messages=self.messages)
+            validate.is_url(v, full=self.full, absolute=self.absolute, relative=self.relative,  messages=self.messages)
         except Invalid, e:
             raise Invalid(e.message, validator=self)
 
