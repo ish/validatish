@@ -272,7 +272,6 @@ class TestURL(unittest.TestCase):
             1.01,
             ['a','b','c'],
             ['a'],
-            '@derek.com',
             'tim@eliot',
             'htt-p://google.com',
             ]
@@ -287,12 +286,61 @@ class TestURL(unittest.TestCase):
             ]
         check_pass('function', self, fn, values)
 
-
     def test_validate_withoutscheme(self):
         fn = lambda v: validate.is_url(v, with_scheme=True)
         self.section='fail'
         values = [
             'foo.com',
+            ]
+        check_fail('function', self, fn, values)
+
+    def test_validate_pass_full(self):
+        fn = lambda v: validate.is_url(v, full=True, absolute=False, relative=False)
+        self.section='pass'
+        values = [
+            'http://foo.com',
+            ]
+        check_pass('function', self, fn, values)
+
+    def test_validate_full(self):
+        fn = lambda v: validate.is_url(v, full=True, absolute=False, relative=False)
+        self.section='fail'
+        values = [
+            'foo.com',
+            ]
+        check_fail('function', self, fn, values)
+
+    def test_validate_pass_absolute(self):
+        fn = lambda v: validate.is_url(v, full=False, absolute=True, relative=False)
+        self.section='pass'
+        values = [
+            '/foo.com',
+            ]
+        check_pass('function', self, fn, values)
+
+    def test_validate_absolute(self):
+        fn = lambda v: validate.is_url(v, full=False, absolute=True, relative=False)
+        self.section='fail'
+        values = [
+            'http://foo.com',
+            'foo.com',
+            ]
+        check_fail('function', self, fn, values)
+
+    def test_validate_pass_relative(self):
+        fn = lambda v: validate.is_url(v, full=False, relative=True, absolute=False)
+        self.section='pass'
+        values = [
+            'foo',
+            ]
+        check_pass('function', self, fn, values)
+
+    def test_validate_relative(self):
+        fn = lambda v: validate.is_url(v, full=False, relative=True, absolute=False)
+        self.section='fail'
+        values = [
+            'http://foo.com',
+            '/foo.com',
             ]
         check_fail('function', self, fn, values)
 
