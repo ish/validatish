@@ -101,7 +101,7 @@ class URL(Validator):
         self.full = full
         self.absolute = absolute
         self.relative = relative
-        if with_schema:
+        if with_scheme:
             self.absolute = False
             self.relative = False
         self.messages = messages
@@ -113,7 +113,7 @@ class URL(Validator):
             raise Invalid(e.message, validator=self)
 
     def __repr__(self):
-        return 'validatish.%s(with_schema=%s)'%(self.__class__.__name__, self.with_scheme)
+        return 'validatish.%s(full=%s, absolute=%s, relative=%s)'%(self.__class__.__name__, self.full, self.absolute, self.relative)
 
 
 class Integer(Validator):
