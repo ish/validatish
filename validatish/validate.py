@@ -9,7 +9,7 @@ from validatish.error import Invalid
 
 # Various compiled regexs used in validation functions.
 _domain_name_regex = re.compile(r"^[a-z0-9][a-z0-9\.\-_]*\.[a-z]+$", re.I)
-_domain_user_regex = re.compile(r"^[^ \t\n\r@<>()]+$", re.I)
+_domain_user_regex = re.compile(r"(\.|\!|\#|\$|\%|\&|\'|\*|\+|\-|\/|\=|\?|\^|\_|\`|\{|\||\}|[a-z]|[A-Z]|[0-9])+$", re.I)
 
 
 def is_required(v,messages=None, none_zero=True):
