@@ -213,6 +213,7 @@ class TestEmail(unittest.TestCase):
             '@derek.com',
             'tim@eliot',
             'info@tim@parkin.co.uk',
+            'foo,bar@example.com',
             ]
         check_fail('function', self, self.fn, values)
         check_fail('class', self, self.class_fn, values)
